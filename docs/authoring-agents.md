@@ -111,7 +111,7 @@ Every agent MUST have these 4 sections to pass validation:
 | **Common Anti-Patterns** | Code agents — save time by listing what to avoid |
 | **Version Awareness** | Code agents — engine API version verification |
 | **When Consulted** | All agents — helps other agents know when to call you |
-| **MCP Integration** | Agents using godot-mcp or other MCP servers |
+| **MCP Integration** | Agents using Beckett MCP or other MCP servers |
 
 ## Naming Conventions
 

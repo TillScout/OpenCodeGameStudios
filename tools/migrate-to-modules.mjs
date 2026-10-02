@@ -1,4 +1,4 @@
-import { copyFileSync, mkdirSync, readdirSync, existsSync, writeFileSync } from "fs";
+import { copyFileSync, mkdirSync, readdirSync, existsSync, readFileSync, writeFileSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -13,7 +13,7 @@ const ORIGINALS = {
   commands: { src: join(OPC, "commands"), dst: (m) => join(DST, m, "commands") },
   rules: { src: join(OPC, "rules"), dst: (m) => join(DST, m, "rules") },
   plugins: { src: join(OPC, "plugins"), dst: (m) => join(DST, m, "plugins") },
-  docs: { src: join(OPC, "docs"), dst: (m) => join(DST, m, "docs") },
+  docs: { src: join(ROOT, "docs", "framework"), dst: (m) => join(DST, m, "docs") },
 };
 
 // Module -> item mappings
@@ -43,6 +43,9 @@ const AGENT_MAP = {
   "unreal-specialist": "engine-unreal", "ue-blueprint-specialist": "engine-unreal",
   "ue-gas-specialist": "engine-unreal", "ue-replication-specialist": "engine-unreal",
   "ue-umg-specialist": "engine-unreal",
+  "bevy-specialist": "engine-bevy",
+  "raylib-specialist": "engine-raylib",
+  "sfml-specialist": "engine-sfml3",
 };
 
 const SKILL_MAP = {
@@ -133,13 +136,28 @@ function copyItem(map, category) {
     }
 
     const dstDir = ORIGINALS[category].dst(module);
+    const dstPath = isSkill
+      ? join(dstDir, item, "SKILL.md")
+      : join(dstDir, `${item}.md`);
+
+    // Module agent copies are hand-adapted (demoted headings, question-mechanism
+    // phrasing). Never clobber them with the canonical version.
+    if (!isSkill && category === "agents" && existsSync(dstPath)) {
+      const ADAPTED_MARKER = "### What This Agent Must NOT Do";
+      const dstAdapted = readFileSync(dstPath, "utf8").includes(ADAPTED_MARKER);
+      const srcAdapted = readFileSync(srcPath, "utf8").includes(ADAPTED_MARKER);
+      if (dstAdapted && !srcAdapted) {
+        console.warn(`  SKIP (module-adapted copy exists): agents/${item}`);
+        continue;
+      }
+    }
 
     if (isSkill) {
       mkdirSync(join(dstDir, item), { recursive: true });
-      copyFileSync(srcPath, join(dstDir, item, "SKILL.md"));
+      copyFileSync(srcPath, dstPath);
     } else {
       mkdirSync(dstDir, { recursive: true });
-      copyFileSync(srcPath, join(dstDir, `${item}.md`));
+      copyFileSync(srcPath, dstPath);
     }
     totalCopied++;
   }

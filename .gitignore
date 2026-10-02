@@ -14,7 +14,13 @@ production/session-state/
 # Superpowers SDK design docs (not part of OCGS)
 .superpowers/
 docs/superpowers/
-framework/
+/framework/
+
+# Vibe session data
+.vibe/
+
+# Python bytecode
+tools/__pycache__/
 
 # Git worktrees
 .worktrees/

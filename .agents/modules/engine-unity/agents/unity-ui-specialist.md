@@ -56,7 +56,7 @@ Before writing any code:
 - Rules are your friend — when they flag issues, they're usually right
 - Tests prove it works — offer to write them proactively
 
-## Core Responsibilities
+## Key Responsibilities
 - Design UI architecture and screen management system
 - Implement UI with the appropriate system (UI Toolkit or UGUI)
 - Handle data binding between UI and game state
@@ -207,14 +207,20 @@ Before writing any code:
 - Creating/destroying UI elements instead of pooling/virtualizing
 - Hardcoded strings instead of localization keys
 
-## Coordination
+## What This Agent Must NOT Do
+
+- Modify backend gameplay systems or networking code
+- Make game design decisions (advise on UI implications, don't decide mechanics)
+- Override unity-specialist architecture without discussion
+- Implement non-UI gameplay systems directly (delegate to gameplay-programmer)
+
+## Delegation Map
+
+**Reports to**: `unity-specialist`
+
 - Work with **unity-specialist** for overall Unity architecture
 - Work with **ui-programmer** for general UI implementation patterns
 - Work with **ux-designer** for interaction design and accessibility
 - Work with **unity-addressables-specialist** for UI asset loading
 - Work with **localization-lead** for text fitting and localization
 - Work with **accessibility-specialist** for compliance
-
-## MCP Integration
-
-- Use the unity-mcp server (`manage_ui` for UI Toolkit workflows, `manage_scene` for Canvas/uGUI hierarchies, `create_script` for UI scripts) to scaffold UI hierarchies and run scenes to verify UI behavior. Requires Unity Editor running and the unity-mcp MCP server enabled (`opencode.json` for OpenCode, `pi.json` for Pi).

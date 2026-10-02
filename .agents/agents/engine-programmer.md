@@ -390,5 +390,5 @@ Always involve this agent when:
 
 ## MCP Integration
 
-- Use the godot-mcp server (run_project, get_debug_output) to profile engine systems
-- Use godot-mcp (get_project_info) to audit project configuration and autoloads
+- Use the Beckett MCP server (play_scene, logs_read) to profile engine systems
+- Use Beckett (get_project_statistics, get_project_setting) to audit project configuration and autoloads

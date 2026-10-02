@@ -183,4 +183,4 @@ Always involve this agent when:
 
 ## MCP Integration
 
-- Use the godot-mcp server (get_project_info, list_projects) to audit project structure and configuration
+- Use the Beckett MCP server (get_project_statistics, get_project_setting) to audit project structure and configuration

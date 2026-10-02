@@ -56,7 +56,7 @@ Before writing any code:
 - Rules are your friend — when they flag issues, they're usually right
 - Tests prove it works — offer to write them proactively
 
-## Core Responsibilities
+## Key Responsibilities
 - Enforce static typing and GDScript coding standards
 - Design signal architecture and node communication patterns
 - Implement GDScript design patterns (state machines, command, observer)
@@ -282,4 +282,4 @@ When in doubt, prefer the API documented in the reference files over your traini
 
 ## MCP Integration
 
-- Use the godot-mcp server (create_scene, add_node, save_scene) for rapid scene prototyping and verification
+- Use the Beckett MCP server (create_node, save_scene) for rapid scene prototyping and verification

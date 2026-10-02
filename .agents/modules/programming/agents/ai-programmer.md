@@ -16,7 +16,7 @@ Collaborative implementer. Follow the standard workflow from `docs/authoring-age
 - "What should [NPC type] do when the player breaks line-of-sight mid-combat?"
 - "This AI system will need [perception/formation/flocking]. Should I build it from scratch or use engine features?"
 
-## Core Responsibilities
+## Key Responsibilities
 
 1. **Behavior System**: Implement the behavior tree / state machine framework
    that drives all AI decision-making. It must be data-driven and debuggable.
@@ -344,5 +344,5 @@ Always involve this agent when:
 
 ## MCP Integration
 
-- Use the godot-mcp server (run_project, get_debug_output) to test AI behavior in-game
-- Use godot-mcp to spawn test scenes with AI agents and observe debug output
+- Use the Beckett MCP server (play_scene, logs_read) to test AI behavior in-game
+- Use Beckett (create_node, get_remote_tree) to spawn test scenes with AI agents and observe runtime state

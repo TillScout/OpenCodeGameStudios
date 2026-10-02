@@ -59,9 +59,9 @@ Before writing any code:
 
 #### Structured Decision UI
 
-Use the `question` tool for implementation choices and next-step decisions.
+Use the runtime's question mechanism for implementation choices and next-step decisions.
 Follow the **Explain -> Capture** pattern: explain options in conversation, then
-call `question` with concise labels. Batch up to 4 questions in one call.
+ask via the question mechanism with concise labels. Batch up to 4 questions in one call.
 For open-ended writing questions, use conversation instead.
 
 ### Key Responsibilities

@@ -32,7 +32,8 @@ const TYPE_CATEGORIES = ["feat", "fix", "perf", "refactor", "revert", "docs", "t
 
 function git(projectRoot: string, args: string[]): string {
   try {
-    return execSync(`git ${args.join(" ")}`, { encoding: "utf8", cwd: projectRoot, stdio: ["pipe", "pipe", "ignore"] }).trim()
+    const result = spawnSync("git", args, { encoding: "utf8", cwd: projectRoot, stdio: ["pipe", "pipe", "ignore"], timeout: 15000 })
+    return result.stdout.trim()
   } catch {
     return ""
   }
@@ -43,7 +44,7 @@ function getLastTag(projectRoot: string): string {
   return tag || "initial"
 }
 
-function parseConventionalCommits(projectRoot: string, sinceTag: string): CommitEntry[] {
+export function parseConventionalCommits(projectRoot: string, sinceTag: string): CommitEntry[] {
   const range = sinceTag === "initial"
     ? "HEAD"
     : `${sinceTag}..HEAD`
@@ -96,7 +97,7 @@ function parseConventionalCommits(projectRoot: string, sinceTag: string): Commit
   return entries
 }
 
-function generateInternalChangelog(entries: CommitEntry[], version: string, date: string): string {
+export function generateInternalChangelog(entries: CommitEntry[], version: string, date: string): string {
   const lines: string[] = []
   lines.push(`# Changelog`)
   lines.push(``)
@@ -133,7 +134,7 @@ function generateInternalChangelog(entries: CommitEntry[], version: string, date
   return lines.join("\n")
 }
 
-function generatePlayerChangelog(entries: CommitEntry[], version: string, date: string): string {
+export function generatePlayerChangelog(entries: CommitEntry[], version: string, date: string): string {
   const lines: string[] = []
   lines.push(`# Update ${version} — ${date}`)
   lines.push(``)
@@ -162,13 +163,21 @@ function generatePlayerChangelog(entries: CommitEntry[], version: string, date: 
   return lines.join("\n")
 }
 
-function updateChangelogFile(projectRoot: string, version: string, content: string, isPlayerFacing: boolean) {
+export function updateChangelogFile(projectRoot: string, version: string, content: string, isPlayerFacing: boolean) {
   const filename = isPlayerFacing ? "CHANGELOG.md" : "CHANGELOG_INTERNAL.md"
   const filePath = path.join(projectRoot, filename)
 
   let existing = ""
   if (fs.existsSync(filePath)) {
     existing = fs.readFileSync(filePath, "utf8")
+  }
+
+  // Guard against duplicate prepends: if the existing file already starts with
+  // the same content (handles repeated session.idle with no new commits).
+  const contentBody = content.replace(/^# Changelog\n\n/m, "").trim()
+  const existingBody = existing.replace(/^# Changelog\n\n/m, "").trim()
+  if (existingBody && existingBody.startsWith(contentBody)) {
+    return
   }
 
   // Prepend new version content, keep existing below

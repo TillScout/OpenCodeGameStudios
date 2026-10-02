@@ -117,6 +117,86 @@ Every task follows: **Question -> Options -> Decision -> Draft -> Approval**
   For UI changes, verify with screenshots. Compare expected output to actual output
   before marking work complete. Every implementation should have a way to prove it works.
 
+### Path-Scoped Coding Standards
+
+The following standards apply to specific directories. Full rule files with
+examples and anti-patterns are in `.agents/rules/`.
+
+**`src/gameplay/**`** — Gameplay Code Rules (`.agents/rules/gameplay-code.md`):
+- ALL gameplay values MUST come from external config/data files, NEVER hardcoded
+- Use delta time for ALL time-dependent calculations (frame-rate independence)
+- NO direct references to UI code — use events/signals for cross-system communication
+- State machines must have explicit transition tables with documented states
+- No static singletons for game state — use dependency injection
+
+**`src/core/**`** — Engine Code Rules (`.agents/rules/engine-code.md`):
+- ZERO allocations in hot paths (update loops, rendering, physics) — pre-allocate, pool, reuse
+- Engine code must NEVER depend on gameplay code (strict dependency direction: engine <- gameplay)
+- Profile before AND after every optimization — document the measured numbers
+- All engine APIs must be thread-safe OR explicitly documented as single-thread-only
+- Consult `docs/engine-reference/` for the current engine version before writing engine API code
+
+**`src/ai/**`** — AI Code Rules (`.agents/rules/ai-code.md`):
+- AI update budget: 2ms per frame maximum — profile to verify
+- All AI parameters must be tunable from data files (behavior tree weights, perception ranges)
+- Stagger AI decision updates across frames — never run full AI logic every frame for all agents
+- AI must be debuggable: implement visualization hooks for all AI state
+- AI should telegraph intentions — players need time to read and react
+
+**`src/networking/**`** — Network Code Rules (`.agents/rules/network-code.md`):
+- Server is AUTHORITATIVE for all gameplay-critical state — never trust the client
+- All network messages must be versioned for forward/backward compatibility
+- Client predicts locally, reconciles with server — implement rollback for mispredictions
+- Never send the full game state every tick — delta-compress changes
+- Security: validate all incoming packet sizes and field ranges
+
+**`src/ui/**`** — UI Code Rules (`.agents/rules/ui-code.md`):
+- UI must NEVER own or directly modify game state — display only, use commands/events
+- All UI text must go through the localization system — no hardcoded user-facing strings
+- Support both keyboard/mouse AND gamepad input for all interactive elements
+- Scalable text and colorblind modes are mandatory, not optional
+- Never poll game state in `_process()` — connect to signals for UI updates
+
+**`assets/shaders/**`** — Shader Code Rules (`.agents/rules/shader-code.md`):
+- File naming: `[type]_[category]_[name].[ext]` (e.g. `spatial_env_water.gdshader`)
+- All uniforms/parameters must have descriptive names and appropriate hints
+- Shaders must degrade gracefully on lower hardware — provide LOD or fallback
+- Profile shader performance on target hardware, not just dev machine
+
+**`assets/data/**`** — Data File Rules (`.agents/rules/data-files.md`):
+- All JSON files must be valid JSON — broken JSON blocks the entire build pipeline
+- File naming: lowercase with underscores, following `[system]_[name].json` pattern
+- Every data file must have a documented schema (JSON Schema or documented in GDD)
+- No orphaned data entries — every entry must be referenced by code or another data file
+- Use consistent key naming: camelCase for keys within JSON files
+
+**`design/gdd/**`** — Design Document Rules (`.agents/rules/design-docs.md`):
+- Every GDD MUST contain 8 sections: Overview, Player Fantasy, Detailed, Formulas, Edge Cases, Dependencies, Tuning Knobs, Acceptance Criteria
+- Formulas must include variable definitions, expected value ranges, and example calculations
+- Edge cases must explicitly state what happens, not just "handle gracefully"
+- Acceptance criteria must be testable — a QA tester must be able to verify pass/fail
+- Cross-system facts must be registered in `design/registry/entities.yaml`
+
+**`design/narrative/**`** — Narrative Rules (`.agents/rules/narrative.md`):
+- All new lore must be cross-referenced against existing lore for contradictions
+- Every lore entry must specify canon level: Established / Provisional / Under Review
+- Character dialogue must match the voice profile defined for that character
+- All narrative text must be localization-ready: no idioms that don't translate
+- No line of dialogue should exceed 120 characters for dialogue box constraints
+
+**`prototypes/**`** — Prototype Code Standards (`.agents/rules/prototype-code.md`):
+- Standards intentionally relaxed for iteration speed — hardcoded values, minimal docs, singletons allowed
+- Goal is learning, not production quality
+- Copy-pasted code is acceptable — no need for abstraction
+- Debug output can be left in place
+
+**`tests/**`** — Test Standards (`.agents/rules/test-standards.md`):
+- Test naming: `test_[system]_[scenario]_[expected_result]` pattern
+- Every test must have a clear arrange/act/assert structure
+- Unit tests must not depend on external state (filesystem, network, database)
+- Every bug fix must have a regression test that would have caught the original bug
+- Performance tests must specify acceptable thresholds and fail if exceeded
+
 ## Context Management
 
 Context is the most critical resource in an OpenCode session. Manage it actively.

@@ -34,7 +34,7 @@
 ## Art Style
 
 ### Rendering Style
-[Realistic / Stylized / Pixel / Cel-shaded / etc.]
+[Realistic / Stylized / Hand-painted / Cel-shaded / Low-poly / etc.]
 
 ### Proportions
 [Character proportions, environment scale, UI scale relationships]
@@ -49,7 +49,7 @@
 [Silhouette requirements, color coding, animation style, proportions]
 
 ## Environment Art Standards
-[Tilesets, modularity, lighting, atmospheric effects, scale]
+[Modular props, environment kits, lighting setups, scale reference]
 
 ## UI Art Standards
 [Button styles, typography, icon style, menu layout principles, HUD density]
@@ -72,6 +72,33 @@
 
 ### Animation Standards
 [Frame rates, blend times, animation graph structure]
+
+### 3D Pipeline Standards
+
+#### Mesh Format
+[glTF/GLB / FBX / both — which format for which use case]
+
+#### Polycount Tiers
+| Category | LOD0 | LOD1 | LOD2 |
+|----------|------|------|------|
+| Characters | [N tris] | [N tris] | [N tris] |
+| Environment Props | [N tris] | [N tris] | [N tris] |
+| Background | [N tris] | [N tris] | [N tris] |
+
+#### Texture Map Standards
+| Map Type | Resolution | Format | Color Space |
+|----------|-----------|--------|-------------|
+| Albedo | [Size] | [Format] | sRGB |
+| Normal | [Size] | [Format] | Linear |
+| Roughness | [Size] | [Format] | Linear |
+| Metallic | [Size] | [Format] | Linear |
+| AO | [Size] | [Format] | Linear |
+
+#### Rigging Standards
+[Skeleton type, bone count limits, naming convention for bones]
+
+#### LOD Strategy
+[Number of levels, reduction ratio, distance thresholds]
 
 ## Accessibility
 - Colorblind-safe UI elements required

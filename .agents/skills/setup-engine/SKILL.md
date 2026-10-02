@@ -704,61 +704,175 @@ Wait for confirmation before writing any files.
 5. **For module files**: Only create modules for subsystems where significant
    changes occurred. Don't create empty or minimal module files.
 
-### 7.3. Configure godot-mcp (Optional — Godot Only)
+### 7.3. Configure Beckett MCP (Optional — Godot Only)
 
 If Godot was chosen as the engine, the AI can work more effectively with the
-[godot-mcp](https://github.com/Coding-Solo/godot-mcp) server, which provides
-runtime tools for interacting with the Godot editor and running project:
+[Beckett](https://github.com/beckettlab/beckett-godot-mcp) MCP server — a
+zero-sidecar MCP server embedded directly in the Godot 4 editor as a GDScript
+plugin. No Node.js, Python, or separate process is required. It exposes a
+reflection-based tool set that can drive any of Godot's 1000+ classes through
+ClassDB, supports both GDScript and C#, and lets the AI see the running game
+(screenshots, UI snapshots, property monitors).
 
-**Available MCP tools:**
-- `launch_editor` — launch the Godot editor
-- `run_project` — run the current project
-- `get_debug_output` — capture live debug output from the running project
-- `stop_project` — stop the running project
+**Available MCP tools (Lite edition):**
+
+Reflection / discovery:
 - `get_godot_version` — check the installed Godot version
-- `list_projects` — list all Godot projects
-- `get_project_info` — get metadata about the project
-- `create_scene` — create a new scene file
-- `add_node` — add nodes to a scene
-- `load_sprite` — load a sprite resource
-- `save_scene` — save a scene file
-- `export_mesh_library` — export a mesh library
-- `get_uid` — get a resource UID
-- `update_project_uids` — update project resource UIDs
+- `find_classes` — search for classes by name or pattern
+- `describe_class` — full ClassDB description of a class (properties, methods, signals)
+- `find_methods` — search for methods across classes
+- `describe_object` — inspect a live object's current state
+- `set_property` — set a property on a node or resource
+- `call_method` — call any method on a live object via ClassDB
+- `get_scene_tree` — get the current scene tree as structured data
+
+Scene authoring (undoable):
+- `create_node` — create a new node
+- `delete_node` — delete a node
+- `rename_node` — rename a node
+- `reparent_node` — move a node under a different parent
+- `duplicate_node` — duplicate a node
+- `move_node` — reorder a node among siblings
+- `instance_scene` — instance a scene file as a child node
+- `save_scene` — save the current scene to a file
+- `open_scene` — open a scene in the editor
+
+GDScript dev-loop:
+- `validate_script` — check a script for errors without attaching it
+- `write_script` — write or replace a script file
+- `script_patch` — apply a targeted patch to an existing script
+- `read_script` — read a script file's contents
+- `attach_script` — attach a script to a node
+
+C# / .NET dev-loop:
+- `build_csharp` — run `dotnet build` compile-check, returning structured file:line:col + CS-code diagnostics (safe while the editor is open)
+- `write_script` — .cs-aware; C# `[GlobalClass]` types appear in reflection
+
+Signals:
+- `connect_signal` — connect a signal to a callable
+- `disconnect_signal` — disconnect a signal
+- `list_signals` — list signals on a node or class
+
+Resource assets:
+- `create_resource` — create a new resource
+- `set_resource` — set a resource on a property
+
+Files / project:
+- `read_file` — read a file from the project
+- `write_file` — write a file in the project
+- `list_dir` — list directory contents
+- `search_files` — search for files by pattern
+- `get_project_setting` — read a project setting
+- `set_project_setting` — write a project setting
+
+Run loop:
+- `play_scene` — run the current scene
+- `stop_scene` — stop the running scene
+- `get_play_state` — check whether the project is playing
+- `wait_until` — wait until a condition is met (with timeout)
+- `logs_read` — read editor / runtime logs
+
+Runtime observation (the AI sees your game):
+- `screenshot` — capture a screenshot of the running game
+- `ui_snapshot` — every visible Control as structured state in one call
+- `get_remote_tree` — full runtime scene tree (not just editor tree)
+- `find_nodes` — search for nodes at runtime by name, type, or path
+- `wait_for_node` — wait until a node appears at runtime
+- `runtime_get_property` — read a property from a live runtime node
+- `monitor_properties` — watch properties on a live node for changes
+- `get_performance_monitors` — read engine performance counters
+- `game_logs` — read game runtime logs
+
+Render diagnosis:
+- `render_probe` — diagnose why a 3D node is or is not on screen (visibility chain, frustum, cull mask, material cull mode, triangle winding)
+- `set_debug_draw` — switch the running game's debug draw mode, then screenshot one render stage
+
+Project / authoring helpers:
+- `get_project_statistics` — project size, script count, scene count, etc.
+- `apply_template` — apply a Beckett recipe template
+- `batch_execute` — execute multiple tool calls in one request
+- `doctor` — one-call self-diagnosis: edition, effort cap, server and auth state, client configs, and context cost
+- `help` — get any tool's full argument catalogue on demand
+
+MCP Resources: `scene://tree`, `scene://selection`, `project://settings`, `assets://list`, `log://output`, `audit://recent`
+
+MCP Prompts: `inspect_node`, `audit_scene`, `setup_2d_player`, `fix_script_errors`, `build_test_fix`, `make_game`
 
 **Installation:**
-```bash
-# Install via npx (no global install needed)
-# Pin to a specific version in production (e.g., @coding-solo/godot-mcp@1.0.0)
-npx @coding-solo/godot-mcp@latest
-```
+
+1. Download Beckett from [itch.io](https://beckettlabs.itch.io/beckett-godot-mcp) or the [Godot Asset Library](https://godotengine.org/asset-library/asset/5296).
+2. Copy `addons/beckett/` into your Godot project's `addons/` directory.
+3. Open the project in Godot 4.2+ and go to **Project → Project Settings → Plugins**.
+4. Enable "Beckett — MCP for Godot". The server auto-starts and writes a `.mcp.json` config file.
+
+No Node.js or external process is needed — the plugin is the server.
 
 **MCP Configuration:**
-Add the following to your harness MCP config (`opencode.json` for OpenCode, `pi.json` for Pi):
+
+Beckett exposes a Streamable HTTP endpoint at `http://127.0.0.1:8770/mcp` by default.
+
+For **OpenCode** (`opencode.json`):
 ```json
 {
-  "mcpServers": {
-    "godot": {
-      "command": "npx",
-      "args": ["@coding-solo/godot-mcp"],
-      "env": {
-        "DEBUG": "true"
-      }
+  "mcp": {
+    "beckett": {
+      "type": "local",
+      "url": "http://127.0.0.1:8770/mcp",
+      "enabled": true
     }
   }
 }
 ```
 
-> **Note:** `DEBUG=true` enables verbose logging of all MCP communication (requests, responses, and debug info). Use it when troubleshooting MCP tool issues or during initial setup. Disable (`"DEBUG": "false"` or remove the variable) in normal use to reduce log noise.
+For **Vibe** (`.vibe/config.toml`):
+```toml
+[[mcp_servers]]
+name = "beckett"
+transport = "streamable-http"
+url = "http://127.0.0.1:8770/mcp"
+```
 
-**Environment setup:**
-Optionally set `GODOT_PATH` if the Godot binary is not in PATH:
+For **Pi** (`pi.json`):
 ```json
-"env": {
-  "GODOT_PATH": "/path/to/godot",
-  "DEBUG": "true"
+{
+  "mcpServers": {
+    "beckett": {
+      "url": "http://127.0.0.1:8770/mcp",
+      "type": "streamableHttp"
+    }
+  }
 }
 ```
+
+**Environment setup:**
+
+Beckett reads configuration from Godot project settings or environment variables:
+
+- `BECKETT_PORT` — server port (default `8770`)
+- `BECKETT_TOKEN` — optional bearer token for authentication
+- `BECKETT_READONLY` — set to `1` to restrict to read-only operations
+- `BECKETT_ALLOWLIST` — comma-separated tool names to allow
+- `BECKETT_CONFIRM_DESTRUCTIVE` — set to `1` to require confirmation for destructive operations
+- `beckett/autostart` — Godot project setting; set to `false` to disable auto-start
+- `beckett/auto_write_client_config` — Godot project setting; set to `false` to disable auto-writing `.mcp.json`
+
+**Remote / VM setup:**
+
+Beckett binds to `127.0.0.1` by default (security: localhost-only with Origin validation and anti DNS-rebinding). To reach it from another machine or VM:
+
+- **SSH tunnel** (recommended, no config change): `ssh -L 8770:127.0.0.1:8770 user@host` — then connect to `http://127.0.0.1:8770/mcp` from the VM.
+- **Change bind address**: if your setup requires direct network access, check Beckett's project settings for a host/bind option. If available, bind to `0.0.0.0` and update the client URL to `http://<host-ip>:8770/mcp`. Beckett's anti DNS-rebinding protection may require configuring allowed origins.
+
+**Verify:**
+
+Call `get_godot_version` via the beckett MCP server. If it returns a version string, the server is running correctly. If it fails, check that the Godot editor is open with the Beckett plugin enabled.
+
+**Troubleshooting:**
+
+- **Connection refused** — ensure the Godot editor is open and the Beckett plugin is enabled (check the dock panel for server status).
+- **Port conflict** — change `BECKETT_PORT` in Godot project settings and update the client URL to match.
+- **DNS-rebind error** — Beckett rejects requests with non-localhost Host headers by default. Use an SSH tunnel or configure allowed origins.
+- **Run `doctor`** — the `doctor` tool provides one-call self-diagnosis of edition, server state, auth state, client configs, and context cost.
 
 ### 7.4. Configure unity-mcp (Optional — Unity Only)
 

@@ -393,5 +393,5 @@ Always involve this agent when:
 
 ## MCP Integration
 
-- Use the godot-mcp server to run the project and capture debug output for iterative debugging
-- Use godot-mcp (create_scene, add_node) to scaffold gameplay scene structures
+- Use the Beckett MCP server to run the project (play_scene) and capture logs (logs_read) for iterative debugging
+- Use Beckett (create_node, save_scene) to scaffold gameplay scene structures

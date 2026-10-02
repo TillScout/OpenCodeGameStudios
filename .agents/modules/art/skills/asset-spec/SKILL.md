@@ -66,19 +66,19 @@ Read all source material **before** asking the user anything.
 
 From the source doc, extract every asset type mentioned — explicit and implied.
 
-**For systems**: look for VFX events, sprite references, UI elements, audio triggers, particle effects, icon needs, and any "visual feedback" language.
+**For systems**: look for VFX events, mesh references, material assignments, model imports, UI elements, audio triggers, particle effects, icon needs, and any "visual feedback" language.
 
 **For levels**: look for unique environment props, atmospheric VFX, lighting setups, ambient audio, skybox/background, and any area-specific materials.
 
-**For characters**: look for sprite sheets (idle, walk, attack, death), portrait/avatar, VFX attached to abilities, UI representation (icon, health bar skin).
+**For characters**: look for 3D mesh (idle, walk, attack poses for rig reference), portrait/avatar, VFX attached to abilities, UI representation (icon, health bar skin). If 2D: sprite sheets (idle, walk, attack, death).
 
 Group assets into categories:
-- **Sprite / 2D Art** — character sprites, UI icons, tile sheets
-- **VFX / Particles** — hit effects, ambient particles, screen effects
-- **Environment** — props, tiles, backgrounds, skyboxes
-- **UI** — HUD elements, menu art, fonts (if custom)
+- **3D Mesh** — character meshes, environment props, blockout geometry
+- **Material / Texture** — PBR materials, texture maps, material assignments
+- **VFX / Particles** — particle systems, hit effects, ambient effects
+- **UI** — HUD elements, menu art, icons (billboard or screen-space)
 - **Audio** — SFX, music tracks, ambient loops *(note: audio specs are descriptions only — no generation prompts)*
-- **3D Assets** — meshes, materials (if applicable per engine)
+- **2D Art** — sprites, tile sheets, UI bitmaps *(if applicable per engine)*
 
 Present the full identified list to the user. Use `question`:
 - Prompt: "I identified [N] assets across [N] categories for **[target]**. Review before speccing:"
@@ -120,12 +120,14 @@ Combine the agent outputs into a draft spec per asset. Present all specs in conv
 
 | Field | Value |
 |-------|-------|
-| Category | [Sprite / VFX / Environment / UI / Audio / 3D] |
-| Dimensions | [e.g. 256×256px, 4-frame sprite sheet] |
-| Format | [PNG / SVG / WAV / etc.] |
-| Naming | [e.g. vfx_frost_hit_01.png] |
-| Polycount | [if 3D — e.g. <800 tris] |
-| Texture Res | [e.g. 512px — matches Art Bible §8 Tier 2] |
+| Category | [3D Mesh / Material / VFX / UI / Audio / 2D Art] |
+| Dimensions | [e.g. 2.0×2.0×3.0 world units, or 256×256px if 2D] |
+| Format | [GLB / FBX / blend / PNG / WAV / etc.] |
+| Naming | [e.g. char_hero_idle.glb] |
+| Polycount | [e.g. <2000 tris — matches Art Bible §8 Tier 1] |
+| Texture Maps | [e.g. albedo 512px, normal 512px, roughness 256px] |
+| Rig | [Yes/No — if Yes, skeleton type: humanoid/bipedal/custom] |
+| LOD Levels | [e.g. 3 (LOD0 <2000, LOD1 <1000, LOD2 <500)] |
 
 **Visual Description:**
 [2–3 sentences. Specific enough for two artists to produce consistent results.]

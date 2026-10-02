@@ -36,7 +36,7 @@ If no engine is specified, run an interactive engine selection process:
 
 **Question 1 — Prior experience** (ask this first, always, via `question`):
 - Prompt: "Have you worked in any of these engines before?"
-- Options: `Godot` / `Unity` / `Unreal Engine 5` / `Multiple — I'll explain` / `None of them`
+- Options: `Godot` / `Unity` / `Unreal Engine 5` / `SFML 3 (C++ library)` / `Raylib (C/C++ library)` / `Bevy (Rust engine)` / `Multiple — I'll explain` / `None of them`
 - If they pick a specific engine → recommend that engine. Prior experience outweighs all other factors. Confirm with them and skip the matrix.
 - If "None" or "Multiple" → continue to the questions below.
 
@@ -46,11 +46,11 @@ If no engine is specified, run an interactive engine selection process:
 - Prompt: "What platforms are you targeting for this game?"
 - Options: `PC (Steam / Epic)` / `Mobile (iOS / Android)` / `Console` / `Web / Browser` / `Multiple platforms`
 - Platform rules that feed directly into the recommendation:
-  - Mobile → Unity strongly preferred; Unreal is a poor fit; Godot is viable for simple mobile
-  - Console → Unity or Unreal; Godot console support requires third-party publishers or significant extra work
-  - Web → Godot exports cleanly to web; Unity WebGL is functional; Unreal has poor web support
-  - PC only → all engines viable; other factors decide
-  - Multiple → Unity is the most portable across PC/mobile/console
+  - Mobile → Unity strongly preferred; Unreal is a poor fit; Godot is viable for simple mobile; SFML3 and Raylib require native compilation per platform (Android NDK, Emscripten for web) — significant extra effort
+  - Console → Unity or Unreal; Godot and C++ library approaches require third-party publishers or significant porting work
+  - Web → Godot exports cleanly to web; Unity WebGL is functional; Unreal has poor web support; Raylib has Emscripten support; SFML3 has no built-in web target
+  - PC only → all engines viable including SFML3 and Raylib (their native home); other factors decide
+  - Multiple → Unity is the most portable across PC/mobile/console; SFML3/Raylib require per-platform build configuration
 
 1. **What kind of game?** (2D, 3D, or both?)
 2. **Primary input method?** (keyboard/mouse, gamepad, touch, or mixed?)
@@ -82,17 +82,38 @@ Do NOT use a simple scoring matrix that eliminates engines. Instead, reason thro
 - Licensing reality: 5% royalty only applies AFTER $1M gross revenue per title. For a first game or any game that doesn't reach $1M, it costs nothing. This threshold is high enough that most indie developers will never pay it.
 - Best fit: AAA-quality 3D; large open-world games; photorealistic visuals; developers with C++ experience or willing to use Blueprint; games targeting high-end PC/console where visual fidelity is a core selling point
 
+**SFML 3**
+- Genuine strengths: Full control over rendering pipeline (raw OpenGL 3.3+); lightweight and fast; C++17 modern idioms; modules are well-separated (Graphics, Audio, Network, Window, System); excellent for learning graphics programming; no runtime fees or licensing; tiny binary size
+- Real limitations: No visual editor — everything is code; no built-in physics, UI system, or scene graph; no asset pipeline; desktop-only (no mobile/web support); minimal community compared to Godot/Unity; you must build your own tooling; steeper initial setup time
+- Licensing reality: zlib/libpng license — completely free with no restrictions whatsoever
+- Best fit: Solo developers who enjoy low-level tinkering; 2D games with custom rendering; educational/learning projects; games that need a tiny footprint; developers who prefer C++ and full pipeline control
+
+**Raylib**
+- Genuine strengths: Extremely simple API — designed for learning and rapid prototyping; supports many platforms (Windows, macOS, Linux, Web via Emscripten, Android, Raspberry Pi); raygui for immediate-mode UI; raymath for math helpers; active community; consistent cross-platform API surface; very small compiled binary
+- Real limitations: No visual editor — everything is code; no built-in physics or scene graph; C API limits abstraction (no RAII, no namespaces in C) — C++ wrappers exist but are community-maintained; less suitable for large/complex games without significant scaffolding; limited 3D rendering compared to engines with deferred rendering
+- Licensing reality: zlib/libpng license — completely free with no restrictions whatsoever
+- Best fit: Learning/teaching game development; rapid prototyping; tiny indie games; game jams; developers who want the simplest possible graphics API; multi-platform 2D games with low performance requirements
+
+**Bevy**
+- Genuine strengths: Modern Rust with strong type safety; ECS-first data-oriented design scales well for systems-heavy gameplay; free forever (MIT OR Apache-2.0); fast iteration with hot reload; solid 2D and capable 3D (wgpu); rapidly growing ecosystem and community
+- Real limitations: No visual editor — everything is code; fast release cadence (breaking changes roughly every 3 months) means frequent migration work; steep Rust learning curve for non-Rust teams; smaller asset/tutorial ecosystem than Godot or Unity; console support is weak; mobile/web require extra tooling (WASM/NDK)
+- Licensing reality: MIT OR Apache-2.0 — completely free with no restrictions whatsoever
+- Best fit: Systems-heavy 2D or 3D games; teams already proficient in Rust; projects that value data-oriented ECS architecture; prototypes to mid-scope games
+
 **Genre-specific guidance** (factor this into the recommendation):
-- 2D any style → Godot strongly preferred
-- 3D stylized / atmospheric / contained world → Godot viable, Unity solid alternative
+- 2D any style → Godot strongly preferred; Raylib viable for simple 2D; SFML3 excellent for custom-rendered 2D
+- 3D stylized / atmospheric / contained world → Godot viable, Unity solid alternative; Raylib viable for simple 3D; SFML3 limited 3D (no built-in model loader)
+- Rust teams / systems-heavy gameplay → Bevy (ECS-first; capable in both 2D and 3D)
 - 3D open world (large, seamless) → Unity or Unreal; Godot is not production-proven for this
 - 3D photorealistic / AAA-quality → Unreal
-- Mobile-first → Unity strongly preferred
-- Console-first → Unity or Unreal; Godot console support requires extra work
+- Mobile-first → Unity strongly preferred; Raylib has Android/iOS support but significant extra work
+- Console-first → Unity or Unreal; C++ libraries require extensive porting
+- Web → Godot; Raylib via Emscripten works for simple games
 - Horror / narrative / walking sim → any engine; match to art style and team experience
 - Action RPG / Soulslike → Unity or Unreal for 3D; community support and assets matter here
-- Platformer 2D → Godot
-- Strategy / top-down / RTS → Godot or Unity depending on 2D vs 3D
+- Platformer 2D → Godot; SFML3 and Raylib both excellent for 2D with full control
+- Strategy / top-down / RTS → Godot or Unity depending on 2D vs 3D; SFML3 excellent for 2D strategy
+- Game jam / prototype → Raylib for speed; Godot if you want an editor
 
 **Recommendation format:**
 1. Show a comparison table with the user's specific factors as rows
@@ -167,6 +188,200 @@ Update the Technology Stack section, replacing the `[CHOOSE]` placeholders with 
 - **Asset Pipeline**: Unreal Content Pipeline
 ```
 
+**For SFML 3:**
+```markdown
+- **Engine**: SFML 3 (Simple and Fast Multimedia Library)
+- **Language**: C++17
+- **Build System**: CMake
+- **Asset Pipeline**: Custom (file-based loading via sf::Texture::loadFromFile, sf::SoundBuffer, etc.)
+```
+
+**For Raylib:**
+```markdown
+- **Engine**: Raylib
+- **Language**: C (primary) or C++ (via raylib-cpp headers)
+- **Build System**: CMake
+- **Asset Pipeline**: Custom (file-based loading via LoadTexture, LoadSound, etc.)
+```
+
+**For Bevy:**
+```markdown
+- **Engine**: Bevy 0.19
+- **Language**: Rust
+- **Build System**: Cargo
+- **Asset Pipeline**: AssetServer / bevy_asset
+```
+
+---
+
+## 4.5. Scaffold Build System (SFML 3 / Raylib / Bevy Only)
+
+If SFML 3 or Raylib was chosen, ask the user about scaffolding the build system:
+
+> "I can create a skeleton CMakeLists.txt and a minimal src/main.cpp to get you started.
+> May I scaffold these files?"
+
+Wait for confirmation before proceeding.
+
+### For SFML 3
+
+Create `CMakeLists.txt` in the project root:
+
+```cmake
+cmake_minimum_required(VERSION 3.20)
+project(GameProject)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(SFML 3 REQUIRED COMPONENTS graphics window audio network system)
+
+add_executable(${PROJECT_NAME}
+    src/main.cpp
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    sfml-graphics
+    sfml-window
+    sfml-audio
+    sfml-network
+    sfml-system
+)
+
+target_include_directories(${PROJECT_NAME} PRIVATE src)
+```
+
+Create `src/main.cpp`:
+
+```cpp
+#include <SFML/Graphics.hpp>
+
+int main() {
+    auto window = sf::RenderWindow(sf::VideoMode({800, 600}), "Game");
+    window.setFramerateLimit(60);
+
+    while (window.isOpen()) {
+        while (const auto event = window.pollEvent()) {
+            if (event->is<sf::Event::Closed>())
+                window.close();
+        }
+
+        window.clear(sf::Color::Black);
+
+        // Game logic and rendering here
+
+        window.display();
+    }
+
+    return 0;
+}
+```
+
+### For Raylib
+
+Create `CMakeLists.txt` in the project root:
+
+```cmake
+cmake_minimum_required(VERSION 3.20)
+project(GameProject)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Try system-installed raylib first, fall back to FetchContent
+find_package(raylib QUIET)
+if(NOT raylib_FOUND)
+    include(FetchContent)
+    FetchContent_Declare(raylib
+        GIT_REPOSITORY https://github.com/raysan5/raylib.git
+        GIT_TAG 5.5
+    )
+    FetchContent_MakeAvailable(raylib)
+endif()
+
+add_executable(${PROJECT_NAME}
+    src/main.cpp
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
+
+target_include_directories(${PROJECT_NAME} PRIVATE src)
+```
+
+Create `src/main.cpp`:
+
+```cpp
+#include "raylib.h"
+
+int main() {
+    const int screenWidth = 800;
+    const int screenHeight = 600;
+
+    InitWindow(screenWidth, screenHeight, "Game");
+    SetTargetFPS(60);
+
+    while (!WindowShouldClose()) {
+        BeginDrawing();
+        ClearBackground(BLACK);
+
+        // Game logic and drawing here
+
+        EndDrawing();
+    }
+
+    CloseWindow();
+    return 0;
+}
+```
+
+### For Bevy
+
+Ask: "I can create a skeleton Cargo project (Cargo.toml + src/main.rs) to get you started. May I scaffold these files?"
+
+Create `Cargo.toml`:
+
+```toml
+[package]
+name = "[project-name-lowercase]"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bevy = "0.19"
+```
+
+Create `src/main.rs`:
+
+```rust
+use bevy::prelude::*;
+
+fn main() {
+    App::new()
+        .add_plugins(DefaultPlugins)
+        .add_systems(Startup, setup)
+        .add_systems(Update, hello)
+        .run();
+}
+
+fn setup(mut commands: Commands) {
+    commands.spawn(Camera2d);
+}
+
+fn hello() {
+    println!("Hello, Bevy!");
+}
+```
+
+Verify the skeleton against `docs/engine-reference/bevy/modules/` for the pinned 0.19 version — if the reference docs show renames (e.g., camera or plugin component changes), update the skeleton to match. Note: Bevy is Rust-only, so the C-vs-C++ language-selection question does NOT apply.
+
+Also ensure `src/` and `assets/` directories exist (create them if missing).
+
+Add a `.gitignore` entry for the build directory if one does not exist:
+
+```
+build/
+```
+
 ---
 
 ## 5. Populate Technical Preferences
@@ -176,6 +391,22 @@ engine-appropriate defaults. Read the existing template first, then fill in:
 
 ### Engine & Language Section
 - Fill from the engine choice made in step 4
+
+### Language Selection (SFML 3 and Raylib only)
+
+(Bevy is excluded — Rust is the only language.)
+
+If SFML 3 or Raylib was chosen, ask the user about C vs C++:
+
+> "SFML 3 / Raylib supports C and C++. Which will this project primarily use?
+>
+>   **A) C++** — RAII patterns, classes, STL, stronger type safety. Recommended for larger projects.
+>   **B) C (Raylib only)** — Plain C API, simpler compilation, C11 standard. Best for small projects or learning.
+>
+> Which will this project primarily use?"
+
+For SFML 3: only C++ is practical (SFML is a C++ library).
+For Raylib: both C and C++ are viable. Record the choice.
 
 ### Naming Conventions (engine defaults)
 
@@ -195,6 +426,32 @@ engine-appropriate defaults. Read the existing template first, then fill in:
 - Functions: PascalCase (e.g., `TakeDamage()`)
 - Booleans: `b` prefix (e.g., `bIsAlive`)
 - Files: Match class without prefix (e.g., `PlayerController.h`)
+
+**For SFML 3 (C++):**
+- Classes: PascalCase (e.g., `PlayerController`, `ResourceManager`)
+- Variables: snake_case (e.g., `move_speed`, `current_health`)
+- Functions: PascalCase or snake_case — project preference, be consistent
+- SFML API methods: camelCase (e.g., `loadFromFile`, `setPosition`)
+- Namespaces: snake_case (e.g., `game::core`, `game::audio`)
+- Files: PascalCase for classes, snake_case for modules (e.g., `PlayerController.cpp`, `audio_manager.cpp`)
+- Headers: `.hpp` or `.h` — project preference, be consistent
+- Constants: UPPER_SNAKE_CASE (e.g., `MAX_PLAYER_SPEED`)
+- Member variables: `m_` prefix (e.g., `m_health`, `m_position`) — standard C++ practice
+
+**For Raylib (C):**
+- Functions: PascalCase matching raylib API style (e.g., `InitGame`, `UpdatePlayer`)
+- Variables: snake_case (e.g., `player_speed`, `current_score`)
+- Types: PascalCase (e.g., `Player`, `GameState`)
+- Macros: UPPER_SNAKE_CASE (e.g., `MAX_BULLETS`, `SCREEN_WIDTH`)
+- Files: snake_case (e.g., `player.cpp`, `game_state.h`)
+- Headers: `.h` for C, `.hpp` for C++ wrappers
+- Enums: UPPER_SNAKE_CASE with prefix (e.g., `GAME_STATE_MENU`, `GAME_STATE_PLAYING`)
+
+**For Raylib (C++):**
+- Classes: PascalCase (e.g., `Player`, `ResourceManager`)
+- Variables: snake_case (e.g., `player_speed`)
+- Functions: PascalCase matching raylib API style (e.g., `UpdatePlayer`, `DrawGame`)
+- Files: PascalCase or snake_case — project preference, be consistent
 
 ### Input & Platform Section
 
@@ -291,6 +548,66 @@ Also populate the `## Engine Specialists` section in `technical-preferences.md` 
 | General architecture review | unreal-specialist |
 ```
 
+**For SFML 3:**
+```markdown
+## Engine Specialists
+- **Primary**: sfml-specialist
+- **Language/Code Specialist**: sfml-specialist (C++ — single specialist covers all code)
+- **Shader Specialist**: sfml-specialist (sf::Shader, GLSL integration)
+- **UI Specialist**: sfml-specialist (no dedicated UI specialist — build UI with sf::Drawable or integrate Dear ImGui)
+- **Additional Specialists**: None
+- **Routing Notes**: Invoke primary for all SFML-related code, build system, and architecture decisions. The single specialist covers graphics, audio, network, window, and system modules.
+
+### File Extension Routing
+
+| File Extension / Type | Specialist to Spawn |
+|-----------------------|---------------------|
+| Game code (.cpp, .hpp, .h files) | sfml-specialist |
+| Shader files (.glsl, .vert, .frag) | sfml-specialist |
+| CMake build files (CMakeLists.txt) | sfml-specialist |
+| General architecture review | sfml-specialist |
+```
+
+**For Raylib:**
+```markdown
+## Engine Specialists
+- **Primary**: raylib-specialist
+- **Language/Code Specialist**: raylib-specialist (C/C++ — single specialist covers all code)
+- **Shader Specialist**: raylib-specialist (LoadShader, GLSL integration, rlgl raw OpenGL)
+- **UI Specialist**: raylib-specialist (raygui header — immediate-mode GUI)
+- **Additional Specialists**: None
+- **Routing Notes**: Invoke primary for all raylib-related code, build system, and architecture decisions. The single specialist covers core, rlgl, raudio, raymath, and extras.
+
+### File Extension Routing
+
+| File Extension / Type | Specialist to Spawn |
+|-----------------------|---------------------|
+| Game code (.c, .cpp, .h, .hpp files) | raylib-specialist |
+| Shader files (.glsl, .vs, .fs) | raylib-specialist |
+| CMake build files (CMakeLists.txt) | raylib-specialist |
+| General architecture review | raylib-specialist |
+```
+
+**For Bevy:**
+```markdown
+## Engine Specialists
+- **Primary**: bevy-specialist
+- **Language/Code Specialist**: bevy-specialist (Rust — single specialist covers all code)
+- **Shader Specialist**: bevy-specialist (WGSL shaders, wgpu materials)
+- **UI Specialist**: bevy-specialist (bevy_ui)
+- **Additional Specialists**: None
+- **Routing Notes**: Invoke primary for all Bevy code, Cargo build, and architecture decisions. The single specialist covers ECS, rendering, UI, assets, audio, and input.
+
+### File Extension Routing
+
+| File Extension / Type | Specialist to Spawn |
+|-----------------------|---------------------|
+| Game code (.rs files) | bevy-specialist |
+| Shader files (.wgsl) | bevy-specialist |
+| Asset / scene files (.ron, .gltf, .scene) | bevy-specialist |
+| General architecture review | bevy-specialist |
+```
+
 ### Collaborative Step
 Present the filled-in preferences to the user. For Godot, include the chosen language and note where the full naming conventions and routing tables live:
 > "Here are the default technical preferences for [engine] ([language if Godot]). The naming conventions and specialist routing are in Appendix A of this skill — I'll apply the [GDScript/C#/Both] variant. Want to customize any of these, or shall I save the defaults?"
@@ -310,6 +627,9 @@ Check whether the engine version is likely beyond the LLM's training data.
 - Godot: training data likely covers up to ~4.3
 - Unity: training data likely covers up to ~2023.x / early 6000.x
 - Unreal: training data likely covers up to ~5.3 / early 5.4
+- SFML 3: training data likely covers up to ~3.0.x (SFML 3.0 released early 2025)
+- Raylib: training data likely covers up to ~5.5
+- Bevy: training data likely covers up to ~0.16/0.17
 
 Compare the user's chosen version against these baselines:
 
@@ -384,61 +704,175 @@ Wait for confirmation before writing any files.
 5. **For module files**: Only create modules for subsystems where significant
    changes occurred. Don't create empty or minimal module files.
 
-### 7.3. Configure godot-mcp (Optional — Godot Only)
+### 7.3. Configure Beckett MCP (Optional — Godot Only)
 
 If Godot was chosen as the engine, the AI can work more effectively with the
-[godot-mcp](https://github.com/Coding-Solo/godot-mcp) server, which provides
-runtime tools for interacting with the Godot editor and running project:
+[Beckett](https://github.com/beckettlab/beckett-godot-mcp) MCP server — a
+zero-sidecar MCP server embedded directly in the Godot 4 editor as a GDScript
+plugin. No Node.js, Python, or separate process is required. It exposes a
+reflection-based tool set that can drive any of Godot's 1000+ classes through
+ClassDB, supports both GDScript and C#, and lets the AI see the running game
+(screenshots, UI snapshots, property monitors).
 
-**Available MCP tools:**
-- `launch_editor` — launch the Godot editor
-- `run_project` — run the current project
-- `get_debug_output` — capture live debug output from the running project
-- `stop_project` — stop the running project
+**Available MCP tools (Lite edition):**
+
+Reflection / discovery:
 - `get_godot_version` — check the installed Godot version
-- `list_projects` — list all Godot projects
-- `get_project_info` — get metadata about the project
-- `create_scene` — create a new scene file
-- `add_node` — add nodes to a scene
-- `load_sprite` — load a sprite resource
-- `save_scene` — save a scene file
-- `export_mesh_library` — export a mesh library
-- `get_uid` — get a resource UID
-- `update_project_uids` — update project resource UIDs
+- `find_classes` — search for classes by name or pattern
+- `describe_class` — full ClassDB description of a class (properties, methods, signals)
+- `find_methods` — search for methods across classes
+- `describe_object` — inspect a live object's current state
+- `set_property` — set a property on a node or resource
+- `call_method` — call any method on a live object via ClassDB
+- `get_scene_tree` — get the current scene tree as structured data
+
+Scene authoring (undoable):
+- `create_node` — create a new node
+- `delete_node` — delete a node
+- `rename_node` — rename a node
+- `reparent_node` — move a node under a different parent
+- `duplicate_node` — duplicate a node
+- `move_node` — reorder a node among siblings
+- `instance_scene` — instance a scene file as a child node
+- `save_scene` — save the current scene to a file
+- `open_scene` — open a scene in the editor
+
+GDScript dev-loop:
+- `validate_script` — check a script for errors without attaching it
+- `write_script` — write or replace a script file
+- `script_patch` — apply a targeted patch to an existing script
+- `read_script` — read a script file's contents
+- `attach_script` — attach a script to a node
+
+C# / .NET dev-loop:
+- `build_csharp` — run `dotnet build` compile-check, returning structured file:line:col + CS-code diagnostics (safe while the editor is open)
+- `write_script` — .cs-aware; C# `[GlobalClass]` types appear in reflection
+
+Signals:
+- `connect_signal` — connect a signal to a callable
+- `disconnect_signal` — disconnect a signal
+- `list_signals` — list signals on a node or class
+
+Resource assets:
+- `create_resource` — create a new resource
+- `set_resource` — set a resource on a property
+
+Files / project:
+- `read_file` — read a file from the project
+- `write_file` — write a file in the project
+- `list_dir` — list directory contents
+- `search_files` — search for files by pattern
+- `get_project_setting` — read a project setting
+- `set_project_setting` — write a project setting
+
+Run loop:
+- `play_scene` — run the current scene
+- `stop_scene` — stop the running scene
+- `get_play_state` — check whether the project is playing
+- `wait_until` — wait until a condition is met (with timeout)
+- `logs_read` — read editor / runtime logs
+
+Runtime observation (the AI sees your game):
+- `screenshot` — capture a screenshot of the running game
+- `ui_snapshot` — every visible Control as structured state in one call
+- `get_remote_tree` — full runtime scene tree (not just editor tree)
+- `find_nodes` — search for nodes at runtime by name, type, or path
+- `wait_for_node` — wait until a node appears at runtime
+- `runtime_get_property` — read a property from a live runtime node
+- `monitor_properties` — watch properties on a live node for changes
+- `get_performance_monitors` — read engine performance counters
+- `game_logs` — read game runtime logs
+
+Render diagnosis:
+- `render_probe` — diagnose why a 3D node is or is not on screen (visibility chain, frustum, cull mask, material cull mode, triangle winding)
+- `set_debug_draw` — switch the running game's debug draw mode, then screenshot one render stage
+
+Project / authoring helpers:
+- `get_project_statistics` — project size, script count, scene count, etc.
+- `apply_template` — apply a Beckett recipe template
+- `batch_execute` — execute multiple tool calls in one request
+- `doctor` — one-call self-diagnosis: edition, effort cap, server and auth state, client configs, and context cost
+- `help` — get any tool's full argument catalogue on demand
+
+MCP Resources: `scene://tree`, `scene://selection`, `project://settings`, `assets://list`, `log://output`, `audit://recent`
+
+MCP Prompts: `inspect_node`, `audit_scene`, `setup_2d_player`, `fix_script_errors`, `build_test_fix`, `make_game`
 
 **Installation:**
-```bash
-# Install via npx (no global install needed)
-# Pin to a specific version in production (e.g., @coding-solo/godot-mcp@1.0.0)
-npx @coding-solo/godot-mcp@latest
-```
+
+1. Download Beckett from [itch.io](https://beckettlabs.itch.io/beckett-godot-mcp) or the [Godot Asset Library](https://godotengine.org/asset-library/asset/5296).
+2. Copy `addons/beckett/` into your Godot project's `addons/` directory.
+3. Open the project in Godot 4.2+ and go to **Project → Project Settings → Plugins**.
+4. Enable "Beckett — MCP for Godot". The server auto-starts and writes a `.mcp.json` config file.
+
+No Node.js or external process is needed — the plugin is the server.
 
 **MCP Configuration:**
-Add the following to your harness MCP config (`opencode.json` for OpenCode, `pi.json` for Pi):
+
+Beckett exposes a Streamable HTTP endpoint at `http://127.0.0.1:8770/mcp` by default.
+
+For **OpenCode** (`opencode.json`):
 ```json
 {
-  "mcpServers": {
-    "godot": {
-      "command": "npx",
-      "args": ["@coding-solo/godot-mcp"],
-      "env": {
-        "DEBUG": "true"
-      }
+  "mcp": {
+    "beckett": {
+      "type": "local",
+      "url": "http://127.0.0.1:8770/mcp",
+      "enabled": true
     }
   }
 }
 ```
 
-> **Note:** `DEBUG=true` enables verbose logging of all MCP communication (requests, responses, and debug info). Use it when troubleshooting MCP tool issues or during initial setup. Disable (`"DEBUG": "false"` or remove the variable) in normal use to reduce log noise.
+For **Vibe** (`.vibe/config.toml`):
+```toml
+[[mcp_servers]]
+name = "beckett"
+transport = "streamable-http"
+url = "http://127.0.0.1:8770/mcp"
+```
 
-**Environment setup:**
-Optionally set `GODOT_PATH` if the Godot binary is not in PATH:
+For **Pi** (`pi.json`):
 ```json
-"env": {
-  "GODOT_PATH": "/path/to/godot",
-  "DEBUG": "true"
+{
+  "mcpServers": {
+    "beckett": {
+      "url": "http://127.0.0.1:8770/mcp",
+      "type": "streamableHttp"
+    }
+  }
 }
 ```
+
+**Environment setup:**
+
+Beckett reads configuration from Godot project settings or environment variables:
+
+- `BECKETT_PORT` — server port (default `8770`)
+- `BECKETT_TOKEN` — optional bearer token for authentication
+- `BECKETT_READONLY` — set to `1` to restrict to read-only operations
+- `BECKETT_ALLOWLIST` — comma-separated tool names to allow
+- `BECKETT_CONFIRM_DESTRUCTIVE` — set to `1` to require confirmation for destructive operations
+- `beckett/autostart` — Godot project setting; set to `false` to disable auto-start
+- `beckett/auto_write_client_config` — Godot project setting; set to `false` to disable auto-writing `.mcp.json`
+
+**Remote / VM setup:**
+
+Beckett binds to `127.0.0.1` by default (security: localhost-only with Origin validation and anti DNS-rebinding). To reach it from another machine or VM:
+
+- **SSH tunnel** (recommended, no config change): `ssh -L 8770:127.0.0.1:8770 user@host` — then connect to `http://127.0.0.1:8770/mcp` from the VM.
+- **Change bind address**: if your setup requires direct network access, check Beckett's project settings for a host/bind option. If available, bind to `0.0.0.0` and update the client URL to `http://<host-ip>:8770/mcp`. Beckett's anti DNS-rebinding protection may require configuring allowed origins.
+
+**Verify:**
+
+Call `get_godot_version` via the beckett MCP server. If it returns a version string, the server is running correctly. If it fails, check that the Godot editor is open with the Beckett plugin enabled.
+
+**Troubleshooting:**
+
+- **Connection refused** — ensure the Godot editor is open and the Beckett plugin is enabled (check the dock panel for server status).
+- **Port conflict** — change `BECKETT_PORT` in Godot project settings and update the client URL to match.
+- **DNS-rebind error** — Beckett rejects requests with non-localhost Host headers by default. Use an SSH tunnel or configure allowed origins.
+- **Run `doctor`** — the `doctor` tool provides one-call self-diagnosis of edition, server state, auth state, client configs, and context cost.
 
 ### 7.4. Configure unity-mcp (Optional — Unity Only)
 
@@ -494,6 +928,65 @@ In a session where `enabled: true`, call any unity-mcp tool (e.g. `list_scenes`)
 - **Server not starting** — Verify `uv --version` works in your terminal. Check the MCP for Unity log for errors.
 - **Client not connecting** — Confirm the HTTP server is running on `localhost:8080` and the URL in your client config matches.
 - **Port 8080 conflict** — Open Unity's MCP for Unity window and change the port; update the `url` in your harness MCP config to match.
+
+### 7.5. Build & Run Setup (SFML 3 / Raylib — No MCP Available)
+
+SFML 3 and Raylib do not have MCP servers. Instead, configure a build-and-run workflow:
+
+**Recommended CMake structure:**
+```
+project-root/
+├── CMakeLists.txt          # cmake_minimum_required, project(), add_executable, target_link_libraries
+├── src/                    # Game source code
+├── assets/                 # Textures, sounds, fonts, shaders
+└── build/                  # Build output (gitignored)
+```
+
+**Minimal CMakeLists.txt for SFML 3:**
+```cmake
+cmake_minimum_required(VERSION 3.20)
+project(my_game)
+
+set(CMAKE_CXX_STANDARD 17)
+find_package(SFML 3 REQUIRED COMPONENTS graphics window audio network system)
+
+add_executable(my_game src/main.cpp)
+target_link_libraries(my_game PRIVATE sfml-graphics sfml-window sfml-audio sfml-network sfml-system)
+```
+
+**Minimal CMakeLists.txt for Raylib:**
+```cmake
+cmake_minimum_required(VERSION 3.20)
+project(my_game)
+
+set(CMAKE_C_STANDARD 11)      # For C projects
+set(CMAKE_CXX_STANDARD 17)    # For C++ projects
+
+# Option A: find_package
+find_package(raylib REQUIRED)
+
+# Option B: FetchContent (vendors raylib automatically)
+include(FetchContent)
+FetchContent_Declare(raylib GIT_REPOSITORY https://github.com/raysan5/raylib.git GIT_TAG 5.5)
+FetchContent_MakeAvailable(raylib)
+
+add_executable(my_game src/main.cpp)
+target_link_libraries(my_game PRIVATE raylib)
+```
+
+**Build & run commands:**
+```bash
+cmake -B build -S .
+cmake --build build
+./build/my_game           # Linux/macOS
+.\build\Release\my_game.exe  # Windows
+```
+
+**For web targets (Raylib only):**
+```bash
+cmake -B build-web -S . -DPLATFORM=Web -DCMAKE_TOOLCHAIN_FILE=/path/to/emscripten/cmake/Modules/Platform/Emscripten.cmake
+cmake --build build-web
+```
 
 ---
 
@@ -660,7 +1153,7 @@ After setup is complete, output:
 Engine Setup Complete
 =====================
 Engine:          [name] [version]
-Language:        [GDScript | C# | GDScript + C# | C# | C++ + Blueprint]
+Language:        [GDScript | C# | GDScript + C# | C# | C++ + Blueprint | C++17 | C (primary) or C++ | C11]
 Knowledge Risk:  [LOW/MEDIUM/HIGH]
 Reference Docs:  [created/skipped]
 AGENTS.md:       [updated]

@@ -133,7 +133,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   canonical `.agents/` directories
 - **`.claude/` stale references**: 3 workflow-catalog.yaml copies referenced `.claude/docs/` instead of
   `docs/framework/`
-- **Pi harness awareness**: MCP config sections (godot-mcp, unity-mcp) now document `pi.json` alongside
+- **Pi harness awareness**: MCP config sections (Beckett, unity-mcp) now document `pi.json` alongside
   `opencode.json`; 5 Unity specialist agents updated to be harness-agnostic
 - **Question tool `maxItems`**: Raised from 4 to 10 to support larger option sets with scrolling UI,
   number-key shortcuts (1-9), and aligned rendering

@@ -344,5 +344,5 @@ Always involve this agent when:
 
 ## MCP Integration
 
-- Use the godot-mcp server (run_project, get_debug_output) to test AI behavior in-game
-- Use godot-mcp to spawn test scenes with AI agents and observe debug output
+- Use the Beckett MCP server (play_scene, logs_read) to test AI behavior in-game
+- Use Beckett (create_node, get_remote_tree) to spawn test scenes with AI agents and observe runtime state

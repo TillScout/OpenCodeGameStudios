@@ -17,7 +17,7 @@ paths:
 
 ## Examples
 
-**Correct** (zero-alloc hot path):
+**Correct** (zero-alloc hot path — GDScript / Godot):
 
 ```gdscript
 # Pre-allocated array reused each frame
@@ -28,12 +28,66 @@ func _physics_process(delta: float) -> void:
     _spatial_grid.query_radius(position, radius, _nearby_cache)
 ```
 
-**Incorrect** (allocating in hot path):
+**Correct** (zero-alloc hot path — C++ / SFML):
+
+```cpp
+// Pre-allocated vertex buffer reused each frame
+std::vector<sf::Vertex> m_vertex_cache;
+
+void update(float dt) {
+    m_vertex_cache.clear();        // Reuse, don't reallocate
+    m_vertex_cache.reserve(1024);  // Ensure capacity
+    // Populate vertices...
+    m_target.draw(m_vertex_cache.data(), m_vertex_cache.size(), sf::Quads);
+}
+```
+
+**Incorrect** (allocating in hot path — GDScript / Godot):
 
 ```gdscript
 func _physics_process(delta: float) -> void:
     var nearby: Array[Node3D] = []  # VIOLATION: allocates every frame
     nearby = get_tree().get_nodes_in_group("enemies")  # VIOLATION: tree query every frame
+```
+
+**Incorrect** (allocating in hot path — C++ / Raylib):
+
+```cpp
+void Update() {
+    std::vector<Vector2> positions;  // VIOLATION: heap alloc every frame
+    for (int i = 0; i < entity_count; i++) {
+        positions.push_back(GetEntityPos(i));
+    }
+    // Use positions...
+}
+```
+
+**Correct** (zero-alloc hot path — Rust / Bevy):
+
+```rust
+// Query once; iterate without allocating per frame
+fn update_positions(
+    mut query: Query<(&mut Transform, &Velocity)>,
+    time: Res<Time>,
+) {
+    for (mut transform, velocity) in &mut query {
+        transform.translation.x += velocity.x * time.delta_secs();
+    }
+}
+```
+
+**Incorrect** (allocating in hot path — Rust / Bevy):
+
+```rust
+fn update_positions(
+    query: Query<(&Transform, &Velocity)>,
+) {
+    let mut tmp: Vec<f32> = Vec::new();  // VIOLATION: heap alloc every frame
+    for (_, velocity) in &query {
+        tmp.push(velocity.x);
+    }
+    // ...
+}
 ```
 
 ## Anti-Patterns
@@ -45,11 +99,18 @@ func _physics_process(delta: float) -> void:
 - Not disconnecting signals before `queue_free()` (error spam from dead nodes)
 - Mixing engine and gameplay dependencies (engine code must not import gameplay)
 - Calling Godot API from threads other than the main thread (undefined behavior)
+- Loading textures/fonts/sounds inside the render loop (blocks rendering every frame)
+- Creating/destroying `sf::Texture` or `RenderTexture2D` as local variables in draw functions
+- Using `new`/`delete` directly instead of RAII (leaks on exception)
+- Not checking return values on resource loading (crashes on missing files)
 
 ## Cross-References
 
 - Agent: `engine-programmer` — owns engine code
 - Agent: `godot-specialist` — Godot-specific engine patterns
+- Agent: `sfml-specialist` — SFML 3-specific engine patterns
+- Agent: `raylib-specialist` — Raylib-specific engine patterns
+- Agent: `bevy-specialist` — Bevy-specific engine patterns
 - Agent: `performance-analyst` — profiles engine performance
 - Agent: `technical-director` — approves engine architecture
 - Rule: `network-code.md` — transport layer dependency

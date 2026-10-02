@@ -12,7 +12,7 @@ Read the art bible or asset standards from the relevant design docs:
 
 - `design/art/art-bible.md` — visual and naming standards
 - `design/gdd/asset-manifest.md` — expected asset list if it exists
-- `.opencode/rules/data-files.md` — data file standards
+- `.agents/rules/data-files.md` — data file standards
 - `AGENTS.md` — project naming conventions
 
 If no art bible exists, note: "No art bible found. Auditing against general game industry conventions." and proceed.
@@ -25,6 +25,8 @@ Use Glob to index all asset files in the target scope. Scan these directories:
 
 ```
 Glob pattern="assets/art/**/*.{png,jpg,svg,psd,tres,tscn}" (art)
+Glob pattern="assets/models/**/*.{glb,gltf,fbx,blend}" (3D models)
+Glob pattern="assets/materials/**/*.{mat,mtl,tres}" (materials)
 Glob pattern="assets/audio/**/*.{ogg,mp3,wav,flac}" (audio)
 Glob pattern="assets/vfx/**/*.{tscn,tres,gdshader}" (VFX)
 Glob pattern="assets/shaders/**/*.{gdshader,tres}" (shaders)
@@ -62,6 +64,10 @@ Bash: find assets/art -name "*.png" -exec stat --format="%s %n" {} \;
 |----------|----------------|--------------|
 | Textures (UI) | < 512 KB | < 5 MB |
 | Textures (3D models) | < 4 MB | < 100 MB |
+| 3D Models (character) | < 10 MB | < 200 MB |
+| 3D Models (environment) | < 5 MB | < 100 MB |
+| 3D Models (blockout) | < 1 MB | < 20 MB |
+| Blend source files | < 50 MB | < 500 MB |
 | Audio (SFX) | < 256 KB | < 20 MB |
 | Audio (music) | < 10 MB | < 100 MB |
 | Shaders | < 10 KB | < 200 KB |
@@ -99,6 +105,24 @@ Grep pattern='preload\("res://' path="src/" (preload statements)
 ```
 
 For each `res://` reference found, verify the file exists at that path using Glob. Flag any reference where the file doesn't exist.
+
+### 3f: 3D Asset Completeness
+
+For each .glb/.gltf/.fbx file, check for companion texture maps:
+- Albedo/Base Color map
+- Normal map
+- Roughness map
+- Metallic map (if metallic workflow)
+- AO map (if specified in art bible)
+
+Flag any 3D model that is missing required texture maps per the art bible
+Section 8 standards.
+
+Also check:
+- Rig presence: if the spec says "Rig: Yes", verify the exported file
+  contains an armature/skeleton
+- LOD files: if the spec specifies LOD levels, verify LOD files exist
+  or the glTF contains LOD meshes
 
 ---
 

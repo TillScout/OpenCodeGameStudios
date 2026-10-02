@@ -341,8 +341,8 @@ Write the approved section to file.
 ### Section 8: Asset Standards
 
 **Agent delegation**: Spawn in parallel:
-- **`art-director`**: File format preferences, naming convention direction, texture resolution tiers, LOD level expectations, export settings philosophy
-- **`technical-artist`**: Engine-specific hard constraints — poly count budgets per asset category, texture memory limits, material slot counts, importer constraints, anything from the performance budgets in `docs/framework/technical-preferences.md`
+- **`art-director`**: File format preferences, naming convention direction, texture resolution tiers, LOD level expectations, export settings philosophy. For 3D assets, also specify: silhouette readability at game camera distance, material style (hand-painted textures vs PBR vs stylized PBR), and whether the game uses baked or real-time lighting (this affects texture map requirements).
+- **`technical-artist`**: Engine-specific hard constraints — poly count budgets per asset category, texture memory limits, material slot counts, importer constraints, anything from the performance budgets in `docs/framework/technical-preferences.md`. For 3D assets, also specify: mesh format (glTF/FBX), polycount tiers per asset category (hero prop, environment prop, character, background element), texture map types and resolution per map type (albedo, normal, roughness, metallic, AO, emission), rig standards (bone count limits, humanoid vs custom skeleton), LOD strategy (number of levels, polycount reduction per level), and material standards (PBR workflow: metallic-roughness vs specular, texture compression format).
 
 If any art preference conflicts with a technical constraint (e.g., art-director wants 4K textures but performance budget requires 2K for mobile), resolve the conflict explicitly — note both the ideal and the constrained standard, and explain the tradeoff. Ambiguity in asset standards is where production costs are born.
 

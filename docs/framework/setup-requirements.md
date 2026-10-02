@@ -81,23 +81,24 @@ OpenCode works with any editor:
 
 ## Optional Engine Dependencies
 
-### Godot-MCP (Optional — Godot Only)
+### Beckett MCP (Optional — Godot Only)
 
-The [godot-mcp](https://github.com/Coding-Solo/godot-mcp) server provides runtime tools for AI-driven testing and debugging of Godot projects. It enables agents to launch the editor, run projects, and capture debug output automatically.
+The [Beckett](https://github.com/beckettlab/beckett-godot-mcp) MCP server is a zero-sidecar server embedded directly in the Godot 4 editor as a GDScript plugin. It provides runtime tools for AI-driven testing and debugging of Godot projects — inspecting scenes, authoring scripts, running the project, and capturing logs. No Node.js or external process is required.
 
 **Installation:**
-```bash
-npx @coding-solo/godot-mcp
-```
+1. Download from [itch.io](https://beckettlabs.itch.io/beckett-godot-mcp) or the [Godot Asset Library](https://godotengine.org/asset-library/asset/5296).
+2. Copy `addons/beckett/` into your Godot project's `addons/` directory.
+3. Open the project in Godot and enable "Beckett — MCP for Godot" in Project → Project Settings → Plugins.
 
 **Configuration:**
-The MCP server is configured via `opencode.json` or editor MCP settings. See `/setup-engine` for full setup guidance.
+The MCP server exposes a Streamable HTTP endpoint at `http://127.0.0.1:8770/mcp`. Configure it in `opencode.json`, `.vibe/config.toml`, or `pi.json`. See `/setup-engine` for full setup guidance.
 
 **Tools provided:**
-- `launch_editor`, `run_project`, `stop_project` — runtime control
-- `get_debug_output` — live debug feedback
-- `create_scene`, `add_node`, `save_scene` — scene manipulation
-- `get_godot_version`, `get_project_info`, `list_projects` — project introspection
+- `play_scene`, `stop_scene`, `get_play_state` — runtime control
+- `logs_read`, `game_logs` — live log capture and feedback
+- `create_node`, `save_scene`, `open_scene` — scene manipulation
+- `get_godot_version`, `get_project_statistics`, `get_project_setting` — project introspection
+- `screenshot`, `ui_snapshot`, `get_remote_tree` — runtime observation
 
 ### Unity-MCP (Optional — Unity Only)
 

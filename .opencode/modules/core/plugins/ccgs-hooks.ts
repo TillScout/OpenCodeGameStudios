@@ -11,7 +11,7 @@ import * as path from "path"
 
 const PROTECTED_BRANCHES = ["main", "master", "develop"]
 const SOURCE_EXTENSIONS = [".gd", ".cs", ".cpp", ".c", ".h", ".hpp", ".rs", ".py", ".js", ".ts"]
-const DESIGN_SECTIONS = [
+export const DESIGN_SECTIONS = [
   "Overview",
   "Player Fantasy",
   "Detailed",
@@ -24,7 +24,7 @@ const DESIGN_SECTIONS = [
 
 function isGitRepo(cwd: string): boolean {
   try {
-    execSync("git rev-parse --git-dir", { encoding: "utf8", cwd, stdio: "ignore" })
+    execSync("git rev-parse --git-dir", { encoding: "utf8", cwd, stdio: "ignore", timeout: 5000 })
     return true
   } catch {
     return false
@@ -32,12 +32,9 @@ function isGitRepo(cwd: string): boolean {
 }
 
 function git(cwd: string, ...args: string[]): string {
-  try {
-    const cmd = args.map((a) => (a.includes(" ") ? `"${a}"` : a)).join(" ")
-    return execSync(`git ${cmd}`, { encoding: "utf8", cwd, stdio: ["pipe", "pipe", "ignore"] }).trim()
-  } catch {
-    return ""
-  }
+  const result = spawnSync("git", args, { encoding: "utf8", cwd, stdio: ["pipe", "pipe", "ignore"], timeout: 15000 })
+  if (result.error || result.status !== 0) return ""
+  return result.stdout.trim()
 }
 
 function normalizePath(p: string): string {
@@ -315,7 +312,7 @@ export function handleDetectGaps(projectRoot: string): string[] {
 
   if (srcCount > 100) {
     if (!fs.existsSync(path.join(projectRoot, "production", "sprints")) &&
-        !fs.existsSync(path.join(projectRoot, "production", "milestones"))) {
+      !fs.existsSync(path.join(projectRoot, "production", "milestones"))) {
       add(`GAP: ${srcCount} files but no production planning. Run: /sprint-plan`)
     }
   }
@@ -367,7 +364,7 @@ export function validateCommitFiles(projectRoot: string, stagedFiles: string[]):
   return { warnings, errors }
 }
 
-const SKILL_CHANGE_RE = /\.opencode\/(?:skills|commands)\/([^/]+)/
+const SKILL_CHANGE_RE = /\.(?:opencode|agents)\/(?:skills|commands)\/([^/]+)/
 
 export function detectSkillChange(filePath: string): string | null {
   const match = filePath.match(SKILL_CHANGE_RE)
@@ -401,7 +398,7 @@ export function validateAssetPath(projectRoot: string, filePath: string): { warn
 
 function runGit(cwd: string, cmd: string): string {
   try {
-    return execSync(cmd, { encoding: "utf8", cwd, stdio: ["pipe", "pipe", "ignore"] }).trim()
+    return execSync(cmd, { encoding: "utf8", cwd, stdio: ["pipe", "pipe", "ignore"], timeout: 15000 }).trim()
   } catch {
     return ""
   }
@@ -497,7 +494,7 @@ export function buildCompactionContext(projectRoot: string): string {
   return lines.join("\n")
 }
 
-function logCompactionEvent(projectRoot: string) {
+export function logCompactionEvent(projectRoot: string) {
   try {
     const logDir = path.join(projectRoot, "production", "session-logs")
     if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true })
@@ -520,21 +517,35 @@ export function handlePostCompact(projectRoot: string): string {
 
 export function showNotification(message: string) {
   const text = (message || "Claude Code needs your attention").slice(0, 200)
+  const platform = process.platform
+
   try {
-    execSync(
-      `powershell.exe -NonInteractive -WindowStyle Hidden -Command "` +
-      `Add-Type -AssemblyName System.Windows.Forms; ` +
-      `$n = New-Object System.Windows.Forms.NotifyIcon; ` +
-      `$n.Icon = [System.Drawing.SystemIcons]::Information; ` +
-      `$n.BalloonTipTitle = 'Claude Code'; ` +
-      `$n.BalloonTipText = '${text.replace(/'/g, "''")}'; ` +
-      `$n.Visible = $true; ` +
-      `$n.ShowBalloonTip(5000); ` +
-      `Start-Sleep -Seconds 6; ` +
-      `$n.Dispose()"`,
-      { stdio: "ignore", timeout: 10000 }
-    )
-  } catch { /* ignore */ }
+    if (platform === "win32") {
+      execSync(
+        `powershell.exe -NonInteractive -WindowStyle Hidden -Command "` +
+        `Add-Type -AssemblyName System.Windows.Forms; ` +
+        `$n = New-Object System.Windows.Forms.NotifyIcon; ` +
+        `$n.Icon = [System.Drawing.SystemIcons]::Information; ` +
+        `$n.BalloonTipTitle = 'OpenCode'; ` +
+        `$n.BalloonTipText = '${text.replace(/'/g, "''")}'; ` +
+        `$n.Visible = $true; ` +
+        `$n.ShowBalloonTip(5000); ` +
+        `Start-Sleep -Seconds 6; ` +
+        `$n.Dispose()"`,
+        { stdio: "ignore", timeout: 10000 }
+      )
+    } else if (platform === "darwin") {
+      execFileSync("osascript", ["-e", `display notification ${JSON.stringify(text)} with title "OpenCode"`], {
+        stdio: "ignore",
+        timeout: 5000,
+      })
+    } else if (platform === "linux") {
+      execFileSync("notify-send", ["OpenCode", text], {
+        stdio: "ignore",
+        timeout: 5000,
+      })
+    }
+  } catch { /* ignore — notification is best-effort */ }
 }
 
 export function detectPushToProtected(cmd: string, currentBranch: string): string {

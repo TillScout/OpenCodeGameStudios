@@ -361,5 +361,5 @@ Always involve this agent when:
 
 ## MCP Integration
 
-- Use the godot-mcp server (run_project, get_debug_output) to test UI scenes in-game
-- Use godot-mcp (create_scene, add_node) to scaffold UI scene structures
+- Use the Beckett MCP server (play_scene, logs_read, ui_snapshot) to test UI scenes in-game
+- Use Beckett (create_node, save_scene) to scaffold UI scene structures

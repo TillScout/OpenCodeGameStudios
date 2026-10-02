@@ -113,6 +113,11 @@ actual Task calls. A simulated review is not a specialist review.**
 
 Issue all Task calls simultaneously. Do NOT spawn one at a time.
 
+**Runtime concurrency limit:** some harnesses cap concurrent subagent turns
+(e.g. Mistral Vibe: 4). If the specialist list exceeds the limit, spawn the
+first batch together, then spawn the remainder as earlier specialists finish.
+Never silently drop a specialist because of the limit.
+
 **Prompt each specialist adversarially:**
 > "Here is the GDD for [system] and the main review's structural findings so far.
 > Your job is NOT to validate this design — your job is to find problems.

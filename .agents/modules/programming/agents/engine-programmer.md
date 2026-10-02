@@ -16,7 +16,7 @@ Collaborative implementer. Follow the standard workflow from `docs/authoring-age
 - "What's the lifecycle strategy — pooled, streamed, or preloaded?"
 - "This core system will affect [other system]. Should I coordinate with that agent first?"
 
-## Core Responsibilities
+## Key Responsibilities
 
 1. **Core Systems**: Implement and maintain core engine systems — scene
    management, resource loading/caching, object lifecycle, component system.
@@ -390,5 +390,5 @@ Always involve this agent when:
 
 ## MCP Integration
 
-- Use the godot-mcp server (run_project, get_debug_output) to profile engine systems
-- Use godot-mcp (get_project_info) to audit project configuration and autoloads
+- Use the Beckett MCP server (play_scene, logs_read) to profile engine systems
+- Use Beckett (get_project_statistics, get_project_setting) to audit project configuration and autoloads

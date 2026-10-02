@@ -16,7 +16,7 @@ Collaborative implementer. Follow the standard workflow from `docs/authoring-age
 - "How should [data] flow from game state to UI — signals, polling, or both?"
 - "This screen affects [other screen]. Should I coordinate layout changes?"
 
-## Core Responsibilities
+## Key Responsibilities
 
 1. **UI Framework**: Implement the UI architecture — screen management,
    theme system integration, styling, animation, input handling, and focus
@@ -361,5 +361,5 @@ Always involve this agent when:
 
 ## MCP Integration
 
-- Use the godot-mcp server (run_project, get_debug_output) to test UI scenes in-game
-- Use godot-mcp (create_scene, add_node) to scaffold UI scene structures
+- Use the Beckett MCP server (play_scene, logs_read, ui_snapshot) to test UI scenes in-game
+- Use Beckett (create_node, save_scene) to scaffold UI scene structures

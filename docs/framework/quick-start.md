@@ -142,7 +142,7 @@ Ask yourself: "What department would handle this in a real studio?"
 | `/qa-plan` | Generate a QA test plan for a sprint or feature |
 | `/bug-triage` | Re-prioritize open bugs, assign to sprints, surface systemic trends |
 | `/smoke-check` | Run critical path smoke test gate before QA hand-off (PASS/FAIL) |
-| `/automated-smoke-test` | Launch the project via godot-mcp and check for startup errors |
+| `/automated-smoke-test` | Launch the project via Beckett MCP and check for startup errors |
 | `/soak-test` | Generate a soak test protocol for extended play sessions |
 | `/regression-suite` | Map coverage to GDD critical paths, flag gaps, maintain regression suite |
 | `/test-setup` | Scaffold test framework + CI pipeline for the project's engine (run once) |
@@ -224,11 +224,10 @@ If you already know what you need, jump directly to the relevant path:
      performance budgets, and engine-specific defaults
    - If the engine version is newer than the LLM's training data, it fetches
      current docs from the web so agents suggest correct APIs
-4. **Enhance with godot-mcp (Godot only)** — Install the optional MCP server
+4. **Enhance with Beckett MCP (Godot only)** — Install the optional MCP server
    for automated editor control and smoke testing:
-   ```bash
-   npx @coding-solo/godot-mcp
-   ```
+   - Copy `addons/beckett/` into your Godot project and enable it in
+     Project → Project Settings → Plugins
    Once configured, run `/automated-smoke-test` to verify the project launches
    without errors.
 

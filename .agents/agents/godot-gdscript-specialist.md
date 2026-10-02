@@ -282,4 +282,4 @@ When in doubt, prefer the API documented in the reference files over your traini
 
 ## MCP Integration
 
-- Use the godot-mcp server (create_scene, add_node, save_scene) for rapid scene prototyping and verification
+- Use the Beckett MCP server (create_node, save_scene) for rapid scene prototyping and verification

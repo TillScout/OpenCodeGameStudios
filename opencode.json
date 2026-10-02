@@ -21,13 +21,18 @@
         "ASEPRITE_PATH": "{env:ASEPRITE_PATH}"
       }
     },
-    "godot": {
+    "beckett": {
       "type": "local",
-      "command": ["npx", "@coding-solo/godot-mcp"],
-      "enabled": false,
+      "url": "http://127.0.0.1:8770/mcp",
+      "enabled": false
+    },
+    "blender": {
+      "type": "local",
+      "command": ["uvx", "--from", "git+https://projects.blender.org/lab/blender_mcp.git#subdirectory=mcp", "blender-mcp"],
+      "enabled": true,
       "environment": {
-        "GODOT_PATH": "{env:GODOT_PATH}",
-        "DEBUG": "{env:DEBUG}"
+        "BLENDER_MCP_HOST": "10.0.2.2",
+        "BLENDER_MCP_PORT": "9876"
       }
     },
     "unity": {

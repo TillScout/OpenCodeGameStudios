@@ -1,0 +1,11 @@
+{
+  "blender": {
+    "type": "local",
+    "command": ["uvx", "--from", "git+https://projects.blender.org/lab/blender_mcp.git#subdirectory=mcp", "blender-mcp"],
+    "enabled": true,
+    "environment": {
+      "BLENDER_MCP_HOST": "10.0.2.2",
+      "BLENDER_MCP_PORT": "9876"
+    }
+  }
+}
