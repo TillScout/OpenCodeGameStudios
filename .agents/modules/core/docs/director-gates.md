@@ -258,7 +258,11 @@ any session that produces player feedback
 > creative direction perspective. Are the game pillars faithfully represented in
 > all design artifacts? Does the current state preserve the core fantasy? Are there
 > any design decisions across GDDs or architecture that compromise the intended
-> player experience? Return READY, CONCERNS [list], or NOT READY [blockers]."
+> player experience? Return READY, CONCERNS [list], or NOT READY [blockers].
+> This gate is an acceptance decision, not an exhaustive defect search (see
+> docs/framework/review-stop-rule.md). Answer as your terminal question: would
+> you hand this project to [target phase] today — yes or no? If no, name the ONE
+> finding that stops you."
 
 **Verdicts**: READY / CONCERNS / NOT READY
 
@@ -404,7 +408,11 @@ or before finalizing any engine-specific implementation approach
 > technical direction perspective. Is the architecture sound for this phase? Are
 > all high-risk engine domains addressed? Are performance budgets realistic and
 > documented? Are Foundation-layer decisions complete enough to begin implementation?
-> Return READY, CONCERNS [list], or NOT READY [blockers]."
+> Return READY, CONCERNS [list], or NOT READY [blockers]. This gate is an
+> acceptance decision, not an exhaustive defect search (see
+> docs/framework/review-stop-rule.md). Answer as your terminal question: would
+> you hand this project to [target phase] today — yes or no? If no, name the ONE
+> finding that stops you."
 
 **Verdicts**: READY / CONCERNS / NOT READY
 
@@ -530,7 +538,11 @@ is invoked
 > production perspective. Is the scope realistic for the stated timeline and team
 > size? Are dependencies properly ordered so the team can actually execute in
 > sequence? Are there milestone or sprint risks that could derail the phase within
-> the first two sprints? Return READY, CONCERNS [list], or NOT READY [blockers]."
+> the first two sprints? Return READY, CONCERNS [list], or NOT READY [blockers].
+> This gate is an acceptance decision, not an exhaustive defect search (see
+> docs/framework/review-stop-rule.md). Answer as your terminal question: would
+> you hand this project to [target phase] today — yes or no? If no, name the ONE
+> finding that stops you."
 
 **Verdicts**: READY / CONCERNS / NOT READY
 
@@ -610,7 +622,10 @@ Agent: `art-director` | Model tier: Sonnet | Domain: Visual identity, art bible,
 > responsible moment? Return READY, CONCERNS [specific visual direction gaps that
 > could cause production rework], or NOT READY [visual blockers that must exist
 > before this phase can succeed — specify what artifact is missing and why it
-> matters at this stage]."
+> matters at this stage]. This gate is an acceptance decision, not an exhaustive
+> defect search (see docs/framework/review-stop-rule.md). Answer as your terminal
+> question: would you hand this project to [target phase] today — yes or no? If
+> no, name the ONE finding that stops you."
 
 **Verdicts**: READY / CONCERNS / NOT READY
 

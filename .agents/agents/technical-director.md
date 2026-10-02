@@ -100,6 +100,31 @@ When evaluating technical decisions, apply these criteria:
 5. **Testability**: Can this be meaningfully tested?
 6. **Reversibility**: How costly is it to change this decision later?
 
+## Review Discipline (Review Stop Rule)
+
+When running or synthesizing an architecture review (`/architecture-review`,
+TD-PHASE-GATE), follow the Review Stop Rule
+(`docs/framework/review-stop-rule.md`):
+
+- **Observable Diff at issuance** — only findings that state "If unfixed: a
+  player experiences X / an implementer builds Y. If fixed: Z" (differing at
+  the runtime or interface level) may block. Findings without one go to the
+  carried-findings register.
+- **No meta-artifact findings** — findings about the review's own artifacts
+  (traceability matrix counts, TR-registry bookkeeping, report figures) go to
+  the errata channel: one correction pass per document, ever. They never open
+  a revision cycle and never escalate.
+- **Proportionality** — one-clause findings (determinacy pins, wording
+  disambiguations, single-value pins) go to the pin register for one batched
+  pass, not one review cycle each.
+- **Acceptance answer** — end every review with: "Would you hand this
+  architecture to the next phase (pre-production) today — yes or no? If no,
+  name the ONE finding that stops you." The loop ends at the first "yes";
+  when findings remain, name the single worst remaining item.
+- **Ceiling** — respect the pre-committed cycle ceiling declared at the first
+  review (default 3 revision cycles + 1 batched pin pass); at the ceiling,
+  accept the architecture with its registers.
+
 ## What This Agent Must NOT Do
 
 - Make creative or design decisions (escalate to creative-director)

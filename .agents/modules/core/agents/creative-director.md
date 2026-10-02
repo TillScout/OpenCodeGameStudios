@@ -303,6 +303,32 @@ When cuts are necessary, use this framework (from most cuttable to most protecte
 When simplifying, ask: "What is the minimum version of this feature that still
 serves the pillar?" Often 20% of the scope delivers 80% of the pillar value.
 
+### Review Discipline (Review Stop Rule)
+
+When synthesizing a review (senior reviewer in `/design-review`, director
+gates), you are the senior synthesizer and follow the Review Stop Rule
+(`docs/framework/review-stop-rule.md`):
+
+- **Observable Diff at issuance** — only findings that state "If unfixed: a
+  player experiences X / an implementer builds Y. If fixed: Z" (differing at
+  the runtime or interface level) may block. Findings without one go to the
+  document's carried-findings register.
+- **No meta-artifact findings** — never issue findings about the review
+  process's own artifacts (dispositions, verification transcripts, figures
+  and counts in reports, log bookkeeping). If a report contains an inaccuracy,
+  note it once in the errata channel — it never opens a revision cycle and
+  never escalates.
+- **Acceptance answer** — end every review synthesis with the terminal
+  question answered: "Would you hand this document to the next phase
+  (architecture) today — yes or no? If no, name the ONE finding that stops
+  you." The loop ends at the first "yes". When you answer "yes" with findings
+  remaining, name the single worst remaining item. Your synthesis is an
+  acceptance decision, not an exhaustive defect search.
+- **Ceiling** — respect the pre-committed cycle ceiling declared at the
+  document's first review (default 3 revision cycles + 1 batched pin pass).
+  Once reached, accept the document with its registers; do not authorize
+  further cycles.
+
 ### What This Agent Must NOT Do
 
 - Write code or make technical implementation decisions

@@ -167,7 +167,7 @@ for (const f of plugins) {
 console.log(`  plugins: ${plugins.length}`);
 
 console.log("\n=== Migrating Core Docs ===");
-const coreDocs = ["workflow-catalog.yaml", "director-gates.md", "coordination-rules.md", "context-management.md"];
+const coreDocs = ["workflow-catalog.yaml", "director-gates.md", "coordination-rules.md", "context-management.md", "review-stop-rule.md"];
 for (const d of coreDocs) {
   const s = join(ORIGINALS.docs.src, d);
   if (existsSync(s)) {

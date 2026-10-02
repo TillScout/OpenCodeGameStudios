@@ -118,6 +118,20 @@ Collect all specialist findings before producing output.
 
 ## Phase 8: Output Review
 
+**Review Stop Rule (as applicable — full text in `docs/framework/review-stop-rule.md`):**
+- **Consumer test** — every item under "Required Changes" must carry an
+  Observable Diff: "If unfixed: a player experiences X / an implementer builds
+  Y. If fixed: Z" — differing at the runtime or interface level. A finding
+  with no stateable observable diff goes under "Suggestions", not "Required
+  Changes".
+- **Regeneration guard** — findings about the review process's own artifacts
+  (review report bookkeeping, counts in prior reviews) never trigger a
+  re-review cycle.
+- **Acceptance anchor** — end every review with one terminal question:
+  "Would you hand this code to the next phase (merge) today — yes or no? If
+  no, name the ONE finding that stops you." The loop ends at the first "yes";
+  when findings remain, name the single worst remaining item.
+
 ```
 ## Code Review: [File/System Name]
 
@@ -147,7 +161,14 @@ Collect all specialist findings before producing output.
 [What is done well -- always include this section]
 
 ### Required Changes
-[Must-fix items before approval — ARCHITECTURAL VIOLATIONs always appear here]
+[Must-fix items before approval — ARCHITECTURAL VIOLATIONs always appear here.
+Each item carries an Observable Diff: "If unfixed: a player experiences X /
+an implementer builds Y. If fixed: Z." Items with no observable diff go to
+Suggestions instead.]
+
+### Acceptance Answer
+"Hand this code to the next phase (merge) today — [Yes / No]"
+[If yes with findings remaining: worst remaining item: (the ONE finding).]
 
 ### Suggestions
 [Nice-to-have improvements]

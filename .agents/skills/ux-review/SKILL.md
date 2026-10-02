@@ -22,9 +22,45 @@ the `/team-ui` pipeline.
 
 **Verdict levels:**
 - **APPROVED** — spec is complete, consistent, and implementation-ready
+- **ACCEPTED (deferred items carried)** — terminal: handoff-ready with register
+  items carried; no further review cycles
 - **NEEDS REVISION** — specific gaps found; fix before handoff but not a full redesign
 - **MAJOR REVISION NEEDED** — fundamental issues with scope, player need, or
   completeness; needs significant rework
+
+---
+
+## Review Stop Rule
+
+This review is an acceptance decision, not an exhaustive defect search. Full
+text: `docs/framework/review-stop-rule.md`. Binding clauses:
+
+1. **Consumer test** — a finding may only be BLOCKING if it carries an
+   Observable Diff, stated at issuance: "If unfixed: a player experiences X /
+   an implementer builds Y. If fixed: Z" — differing at the runtime or
+   interface level. No observable diff → carried-findings register, not a bar.
+2. **Regeneration guard** — findings about the review process's own artifacts
+   (figures and counts in review reports, disposition bookkeeping) go to a
+   single consolidated errata channel: at most one correction pass per
+   document, ever. They never open a revision cycle and never escalate.
+3. **Proportionality** — one-clause findings that pass the consumer test
+   (determinacy pins, wording disambiguations, single-value pins) go to the
+   pin register and are executed in ONE batched pass at the next phase
+   boundary, not one review cycle each.
+4. **Acceptance anchor** — end every review with: "Would you hand this spec to
+   the next phase (implementation) today — yes or no? If no, name the ONE
+   finding that stops you." The loop ends at the first "yes"; when findings
+   remain, name the single worst remaining item.
+5. **Pre-committed ceiling** — at a spec's FIRST review, declare the ceiling
+   (default: 3 revision cycles after first review, plus 1 batched pin pass)
+   and state it in the output. Re-reviews count cycles; at the ceiling the
+   verdict is ACCEPTED (deferred items carried). The ceiling cannot be raised
+   mid-loop.
+
+**Verdict rules:** zero blocking findings after routing → ACCEPTED (deferred
+items carried) or APPROVED, even with non-empty registers. Registers never
+block. This skill is read-only — report the registers in the verdict output
+and offer them for appending to the spec.
 
 ---
 
@@ -213,10 +249,18 @@ Run all checks against a `hud-design.md`-based document.
 - [ ] States & Variants — MISSING: error state not documented
 
 ### Quality Issues: [N found]
-1. **[Issue title]** [BLOCKING / ADVISORY]
+1. **[Issue title]** [BLOCKING / ADVISORY / PIN / REGISTER / ERRATA]
+   - Observable Diff (required for BLOCKING): If unfixed: a player experiences
+     [X] / an implementer builds [Y]. If fixed: [Z]
    - What's wrong: [specific description]
    - Where: [section name]
    - Fix: [specific action to take]
+
+Routing (Review Stop Rule): BLOCKING items must state an Observable Diff;
+PIN items (one-clause, diff stated) go to the pin register for one batched
+pass; REGISTER items (no stateable diff) go to the carried-findings register;
+ERRATA items (meta-artifact corrections) go to the errata channel — one pass
+per document, never a revision cycle.
 
 ### GDD Alignment: [ALIGNED / GAPS FOUND]
 - GDD [name] UI Requirements — [X/Y requirements covered]
@@ -229,12 +273,29 @@ Run all checks against a `hud-design.md`-based document.
 ### Pattern Library: [CONSISTENT / INCONSISTENCIES FOUND]
 - [findings]
 
-### Verdict: APPROVED / NEEDS REVISION / MAJOR REVISION NEEDED
-**Blocking issues**: [N] — must be resolved before implementation
+### Registers (carried on the document)
+- **Pin register**: [one-clause findings pending one batched pass at the next phase boundary — or "None"]
+- **Carried-findings register**: [findings with no observable diff — deferred, non-blocking — or "None"]
+- **Errata**: [meta-artifact corrections, one pass per document — or "None"]
+
+### Acceptance Answer
+"Hand to the next phase (implementation) today — [Yes / No]"
+[If yes with findings remaining: worst remaining item: (the ONE finding). If no:
+the ONE finding that stops handoff.]
+
+### Verdict: APPROVED / ACCEPTED (deferred items carried) / NEEDS REVISION / MAJOR REVISION NEEDED
+Cycle count: [N] of ceiling [M — declared at first review; default 3 + 1 pin pass]
+**Blocking issues**: [N — each with an Observable Diff] — must be resolved before implementation
 **Advisory issues**: [N] — recommended but not blocking
+**Register items**: [N] — carried, non-blocking
 
 [For APPROVED]: This spec is ready for handoff to `/team-ui` Phase 2
 (Visual Design).
+
+[For ACCEPTED (deferred items carried)]: Terminal — this spec is handed to
+implementation with its registers. Append the pin register, carried-findings
+register, and errata sections to the spec so the implementation phase can
+execute the batched pass. Do not run further review cycles.
 
 [For NEEDS REVISION]: Address the [N] blocking issues above, then re-run
 `/ux-review`.

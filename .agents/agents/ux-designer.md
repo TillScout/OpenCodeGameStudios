@@ -96,6 +96,31 @@ Every feature must pass:
 - [ ] Subtitles available for all dialogue
 - [ ] UI scales correctly at all supported resolutions
 
+## Review Discipline (Review Stop Rule)
+
+When producing a UX review verdict (`/ux-review`), follow the Review Stop Rule
+(`docs/framework/review-stop-rule.md`):
+
+- **Observable Diff at issuance** — only findings that state "If unfixed: a
+  player experiences X / an implementer builds Y. If fixed: Z" (differing at
+  the runtime or interface level) may be BLOCKING. Findings without one go to
+  the carried-findings register.
+- **No meta-artifact findings** — findings about the review's own artifacts
+  (figures and counts in review reports, disposition bookkeeping) go to the
+  errata channel: one correction pass per document, ever. They never open a
+  revision cycle and never escalate.
+- **Proportionality** — one-clause findings (determinacy pins, wording
+  disambiguations, single-value pins) go to the pin register for one batched
+  pass at the next phase boundary.
+- **Acceptance answer** — end every review with: "Would you hand this spec to
+  the next phase (implementation) today — yes or no? If no, name the ONE
+  finding that stops you." The loop ends at the first "yes"; when findings
+  remain, name the single worst remaining item. The verdict is an acceptance
+  decision, not an exhaustive defect search.
+- **Ceiling** — respect the pre-committed cycle ceiling declared at the
+  spec's first review (default 3 revision cycles + 1 batched pin pass); at
+  the ceiling, accept the spec with its registers.
+
 ## What This Agent Must NOT Do
 
 - Make visual style decisions (defer to art-director)

@@ -28,6 +28,13 @@ Read the target design document in full. Read AGENTS.md to understand project co
 
 **Prior review check:** Check whether `design/gdd/reviews/[doc-name]-review-log.md` exists. If it does, read the most recent entry — note what verdict was given and what blocking items were listed. This session is a re-review; track whether prior items were addressed.
 
+**Cycle ceiling (Review Stop Rule clause 5 — see `docs/framework/review-stop-rule.md`):**
+- **No review log exists** → this is the FIRST review. Declare the cycle ceiling now: default **3 revision cycles after first review, plus 1 batched pin pass**. Record it in the review output and (with approval) in the review log entry. The ceiling cannot be raised mid-loop.
+- **Review log exists** → count prior `NEEDS REVISION` / `MAJOR REVISION NEEDED` entries as cycles used. Report: "Cycle [N] of ceiling [M]."
+- **Ceiling reached** → this review MUST end with the ACCEPTED (deferred items carried) verdict. Do not issue a revision bar. Route all new findings to the registers and close with the acceptance question (Phase 4).
+
+**Register load:** Check the target document for `## Carried-Findings Register`, `## Pin Register`, and `## Errata` sections (written by prior reviews). If present, load them — pin-register items are due for their batched pass, and carried items must not be re-litigated as new findings.
+
 ---
 
 ## Phase 2: Completeness Check
@@ -106,12 +113,21 @@ actual Task calls. A simulated review is not a specialist review.**
 
 Issue all Task calls simultaneously. Do NOT spawn one at a time.
 
+**Runtime concurrency limit:** some harnesses cap concurrent subagent turns
+(e.g. Mistral Vibe: 4). If the specialist list exceeds the limit, spawn the
+first batch together, then spawn the remainder as earlier specialists finish.
+Never silently drop a specialist because of the limit.
+
 **Prompt each specialist adversarially:**
 > "Here is the GDD for [system] and the main review's structural findings so far.
 > Your job is NOT to validate this design — your job is to find problems.
 > Challenge the design choices from your domain expertise. What is wrong,
 > underspecified, likely to cause problems, or missing entirely?
 > Be specific and critical. Disagreement with the main review is welcome."
+
+Any fix or replacement text a specialist prescribes must satisfy Phase 4's prescription discipline (simulation, existence, coverage arithmetic, grader determinacy) — specialists self-check their own prescriptions before issuing them.
+
+**Observable Diff requirement (Review Stop Rule clause 1).** Every finding a specialist submits as blocking must carry an Observable Diff, stated at issuance: "If unfixed: a player experiences X / an implementer builds Y. If fixed: Z" — where X/Y and Z differ at the runtime or interface level. Tell each specialist: findings without a stateable observable diff will be routed to the document's carried-findings register and cannot block, so don't phrase findings as opinions — state the diff or mark the item `[register]` yourself. Findings about the review process's own artifacts (dispositions, transcripts, figures and counts in reports, log bookkeeping) must be marked `[errata]` — they never open a revision cycle.
 
 **Additional instructions per agent type:**
 
@@ -124,9 +140,11 @@ Issue all Task calls simultaneously. Do NOT spawn one at a time.
 ### Step 3 — Senior lead review
 
 After all specialists respond, spawn `creative-director` as the **senior reviewer**:
-- Provide: the GDD, all specialist findings, any disagreements between them
-- Ask: "Synthesise these findings. What are the most important issues? Do you agree with the specialists? What is your overall verdict on this design?"
-- The creative-director's synthesis becomes the **final verdict** in Phase 4.
+- Provide: the GDD, all specialist findings, any disagreements between them, the cycle count vs the declared ceiling, and any existing registers on the document
+- Ask: "Synthesise these findings. What are the most important issues? Do you agree with the specialists?"
+- Ask also: any prescription, adjudication, or re-review bar the synthesis issues must satisfy Phase 4's prescription discipline — including the bar itself.
+- **Acceptance anchor (Review Stop Rule clause 4) — the terminal question, always asked last:** "Would you hand this document to the next phase (architecture) today — yes or no? If no, name the ONE finding that stops you." The loop ends at the first "yes". The creative-director must answer this even when findings exist, and must name the single worst remaining item when answering "yes".
+- The creative-director's synthesis and acceptance answer become the **final verdict** in Phase 4.
 
 ### Step 4 — Surface disagreements
 
@@ -137,6 +155,30 @@ Mark every finding with its source: `[game-designer]`, `[economy-designer]`, `[c
 ---
 
 ## Phase 4: Output Review
+
+**Review Stop Rule (binding — full text in `docs/framework/review-stop-rule.md`).** This review is an acceptance decision, not an exhaustive defect search. Route every finding through this table before writing the output:
+
+| Finding type | Route | Counts toward ceiling? |
+|--------------|-------|------------------------|
+| Passes the consumer test, design-level (stated Observable Diff) | Revision bar (`Required Before Implementation`) | Yes |
+| Passes the consumer test, but one-clause (determinacy pin, wording disambiguation, single-value pin) | **Pin register** — one batched pass at the next phase boundary | No — the batched pass is the ceiling's +1 |
+| No stateable Observable Diff | **Carried-findings register** — cannot block | No |
+| About the review process's own artifacts (dispositions, verification transcripts, figures/counts in reports, log bookkeeping) | **Errata channel** — one correction pass per document, ever; never a revision cycle, never an escalation | No |
+
+**Blocking findings must each carry an Observable Diff field:** "If unfixed: a player experiences X / an implementer builds Y. If fixed: Z." A finding with no observable diff cannot appear in `Required Before Implementation`.
+
+**Verdict rules:**
+- Zero blocking findings after routing → verdict is **ACCEPTED (deferred items carried)** or APPROVED, even if the registers are non-empty. Registers do not block.
+- Ceiling reached → verdict is **ACCEPTED (deferred items carried)**, regardless of remaining findings.
+- The review always ends with the acceptance question and, when the answer is "yes", the named ONE worst remaining item.
+
+**Prescription discipline (binding on every fix this review issues).** A review's prescriptions — replacement text, pinned rules, named mechanisms, plant/pattern/cell counts, grader rubrics, and the re-review bar written into the review log — are implemented faithfully by the revision session. A defective prescription therefore enters the GDD with the review's own stamp of approval and is only found one or two cycles later, wasting a full review round. Before any prescription is issued into the output or the review log, it must pass these checks:
+
+1. **Simulation** — every prescribed formula, predicate, driver, or rule containing arithmetic is walked against its boundary inputs (minimum and maximum plausible values, plus the exact input class the fix targets) before issuance.
+2. **Existence** — every named engine mechanism, API member, or tool is verified against engine documentation or a registered probe gate. A mechanism the engine does not expose is never prescribed as if it existed.
+3. **Coverage arithmetic** — any prescription that prescribes a COUNT of things (violation plants, scan patterns, test cells, fixtures, table rows, criteria) must enumerate the distinct families the target rule covers and show that every family is caught by at least one prescribed item (families × plants). A disjunction ("do X OR Y") is inadmissible unless each arm alone satisfies the coverage count.
+4. **Grader determinacy** — any prescription containing a human-judgment rubric must pass: "would two independent facilitators reach the same ruling from this text as written?" If not, the rubric is rewritten to a determinate form before issuance.
+5. **Self-application** — this discipline applies to the review's own output, including the re-review bar and any adjudication text the creative-director issues. A review that audits the GDD's fixes but exempts its own instructions has not learned the lesson.
 
 ```
 ## Design Review: [Document Title]
@@ -152,7 +194,23 @@ Re-review: [Yes — prior verdict was X on YYYY-MM-DD / No — first review]
 - ✗ loot-system.md — NOT FOUND (file does not exist yet)
 
 ### Required Before Implementation
-[Numbered list — blocking issues only. Each item tagged with source agent.]
+[Numbered list — blocking issues only. Each item tagged with source agent and
+carrying an Observable Diff field:]
+1. [Issue] — [source agent]
+   Observable Diff: If unfixed: a player experiences [X] / an implementer builds [Y]. If fixed: [Z].
+
+### Pin Register (one batched pass at the next phase boundary)
+[One-clause findings that pass the consumer test: determinacy pins, wording
+disambiguations, single-value pins. Each with its Observable Diff. Executed
+together in ONE pass — never one review cycle each.]
+
+### Carried-Findings Register (deferred, non-blocking)
+[Findings with no stateable Observable Diff. Recorded on the document; cannot
+block. If empty, write "None."]
+
+### Errata (one correction pass per document, ever)
+[Meta-artifact findings: figures and counts in review reports, disposition
+bookkeeping, verification transcripts. Never open a revision cycle. If empty, write "None."]
 
 ### Recommended Revisions
 [Numbered list — important but not blocking. Source-tagged.]
@@ -165,7 +223,9 @@ Present both sides — do not silently resolve.]
 [Minor improvements, low priority.]
 
 ### Senior Verdict [creative-director]
-[Creative director's synthesis and overall assessment.]
+[Creative director's synthesis and overall assessment. MUST include the
+acceptance answer: "Hand to the next phase (architecture) today — yes/no."
+If yes with findings remaining, name the ONE worst remaining item.]
 
 ### Scope Signal
 Estimate implementation scope based on: dependency count, formula count,
@@ -176,7 +236,12 @@ systems touched, and whether new ADRs are required.
 - **XL** — cross-cutting concern, 5+ dependencies, multiple new ADRs likely
 Label clearly: "Rough scope signal: M (producer should verify before sprint planning)"
 
-### Verdict: [APPROVED / NEEDS REVISION / MAJOR REVISION NEEDED]
+### Verdict: [APPROVED / ACCEPTED (deferred items carried) / NEEDS REVISION / MAJOR REVISION NEEDED]
+Cycle count: [N] of ceiling [M — declared at first review; default 3 revision
+cycles + 1 batched pin pass. The ceiling cannot be raised mid-loop.]
+[ACCEPTED (deferred items carried) = terminal: the senior answer to the
+acceptance question was "yes" with register items carried, or the ceiling was
+reached. ACCEPTED and APPROVED both close the loop — no further review cycles.]
 ```
 
 This skill is read-only — no files are written during Phase 4.
@@ -189,12 +254,15 @@ Use `question` for ALL closing interactions. Never plain text.
 
 **First widget — what to do next:**
 
-If APPROVED (first-pass, no revision needed), proceed directly to the systems-index widget, review-log widget, then the final closing widget. Do not show a separate "what to do" widget — the final closing widget covers next steps.
+If APPROVED or ACCEPTED (deferred items carried) — no revision bar issued — proceed directly to the systems-index widget, review-log widget, then the final closing widget. Do not show a separate "what to do" widget — the final closing widget covers next steps.
+
+If ACCEPTED with non-empty registers, first ask via `question`: "May I append the carried-findings register, pin register, and errata sections to [doc-path]? They are consumed by `/create-architecture` and `/consistency-check` at the next phase boundary." Options: `[A] Yes — append registers to the document` / `[B] No — registers live in the review log only`.
 
 If NEEDS REVISION or MAJOR REVISION NEEDED, options:
 - `[A] Revise the GDD now — address blocking items together`
 - `[B] Stop here — revise in a separate session`
 - `[C] Accept as-is and move on (only if all items are advisory)`
+- `[D] Run the batched pin pass now — execute the pin register items in one pass (no full revision cycle)`
 
 **If user selects [A] — Revise now:**
 
@@ -226,10 +294,14 @@ Use a third `question`:
 
 If yes, append an entry in this format:
 ```
-## Review — [YYYY-MM-DD] — Verdict: [APPROVED / NEEDS REVISION / MAJOR REVISION NEEDED]
+## Review — [YYYY-MM-DD] — Verdict: [APPROVED / ACCEPTED (deferred items carried) / NEEDS REVISION / MAJOR REVISION NEEDED]
+Cycle ceiling: [M — declared at first review; default 3 revision cycles + 1 batched pin pass. Only present on the first review entry.]
+Cycles used: [N of M]
 Scope signal: [S/M/L/XL]
 Specialists: [list]
-Blocking items: [count] | Recommended: [count]
+Blocking items: [count — each with an Observable Diff] | Recommended: [count]
+Pin register: [count] | Carried-findings register: [count] | Errata: [count]
+Acceptance answer: [Yes — handed to next phase / No — blocked by: (the ONE finding)]
 Summary: [2-3 sentence summary of key findings from creative-director verdict]
 Prior verdict resolved: [Yes / No / First review]
 ```

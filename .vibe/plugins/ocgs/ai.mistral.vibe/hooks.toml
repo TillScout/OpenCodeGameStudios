@@ -1,0 +1,24 @@
+# OCGS Hooks — Vibe plugin hook definitions
+# Ported from .opencode/plugins/ccgs-hooks.ts
+
+[[hooks]]
+name = "git-guard"
+type = "pre_tool"
+match = "bash"
+strict = false
+command = "python3 $PLUGIN_ROOT/scripts/ocgs-hooks.py git-guard"
+description = "Block git push to protected branches; validate staged files on commit."
+
+[[hooks]]
+name = "file-validator"
+type = "post_tool"
+match = "re:(write_file|edit)"
+command = "python3 $PLUGIN_ROOT/scripts/ocgs-hooks.py file-validator"
+description = "Validate asset naming, JSON format, GDD sections, and skill changes after file writes."
+
+[[hooks]]
+name = "agent-audit"
+type = "post_tool"
+match = "task"
+command = "python3 $PLUGIN_ROOT/scripts/ocgs-hooks.py agent-audit"
+description = "Log subagent invocations and completions to the audit log."

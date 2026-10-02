@@ -89,6 +89,30 @@ Extracted from [N] GDDs | [X] total requirements
 This baseline feeds into every subsequent phase. No GDD requirement should be
 left without an architectural decision to support it by the end of this session.
 
+### 0b-2. Consume Review Registers (Review Stop Rule — see `docs/framework/review-stop-rule.md`)
+
+While reading each GDD in 0b, check for and load the registers appended by
+reviews (`/design-review`, `/review-all-gdds`):
+
+- `## Carried-Findings Register` — deferred, non-blocking findings
+- `## Pin Register` — one-clause fixes (determinacy pins, wording
+  disambiguations, single-value pins)
+- `## Errata` — meta-artifact corrections
+
+This is the next natural phase boundary: **execute the batched pin pass here.**
+With the user's approval, apply ALL pin-register items across all GDDs in ONE
+batched edit pass — never one revision cycle each. Do not re-review the pinned
+fixes; the pin register items already passed the consumer test at issuance.
+
+Carried-findings register items are context, not blockers: read them so the
+architecture does not hard-code around them, but do not fix them and do not
+send the GDD back for re-review. Report at the end of the pass: "Pin pass
+executed: [N] items across [M] GDDs. Carried items still open: [K]. Errata:
+corrections applied once / none pending."
+
+If no GDD has registers, note "No review registers found — nothing to batch"
+and continue.
+
 ### 0c. Existing Architecture Decisions
 
 Read all files in `docs/architecture/` to understand what has already been decided.

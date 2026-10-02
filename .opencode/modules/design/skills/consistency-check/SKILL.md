@@ -79,6 +79,30 @@ file's creation date.
 
 Report the in-scope GDD list before scanning.
 
+### Phase 2b: Consume Review Registers (Review Stop Rule — see `docs/framework/review-stop-rule.md`)
+
+For each in-scope GDD, check for and load the review registers appended by
+`/design-review` or `/review-all-gdds`:
+
+- `## Pin Register` — one-clause fixes pending their batched pass
+- `## Carried-Findings Register` — deferred, non-blocking findings
+- `## Errata` — meta-artifact corrections
+
+If pin-register items exist, this check is a natural phase boundary: offer to
+execute ALL of them in ONE batched edit pass (with the user's approval) —
+never one revision cycle each, and no re-review of the pinned fixes (they
+passed the consumer test at issuance). Apply errata at most once per document,
+consolidated; never re-open a review for them.
+
+Carried-findings register items are context, not conflicts: note them in the
+report as open deferred items, but do not flag them as CONFLICT and do not
+send the GDD back for re-review. If a carried item would change a registered
+value, mention it in the report's informational section for the user to
+decide.
+
+Report: "Registers consumed: pin pass [N items executed / offered], errata
+[applied once / none], carried items still open [K]."
+
 ---
 
 ## Phase 3: Grep-First Conflict Scan

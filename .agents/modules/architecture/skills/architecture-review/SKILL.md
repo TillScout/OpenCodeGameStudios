@@ -29,6 +29,42 @@ and Pre-Production.
 
 ---
 
+## Review Stop Rule
+
+This review is an acceptance decision, not an exhaustive defect search. Full
+text: `docs/framework/review-stop-rule.md`. Binding clauses:
+
+1. **Consumer test** — a finding may only be BLOCKING if it carries an
+   Observable Diff, stated at issuance: "If unfixed: a player experiences X /
+   an implementer builds Y. If fixed: Z" — differing at the runtime or
+   interface level. No observable diff → carried-findings register, not a bar.
+2. **Regeneration guard** — findings about this review's own artifacts
+   (traceability matrix counts, TR-registry bookkeeping, figures in review
+   reports, reflexion-log entries) go to a single consolidated errata channel:
+   at most one correction pass per report, ever. They never open a revision
+   cycle and never escalate — no tripwires, watch lists, or grace periods
+   may be built on them.
+3. **Proportionality** — one-clause findings that pass the consumer test
+   (determinacy pins, wording disambiguations, single-value pins) go to the
+   pin register and are executed in ONE batched pass at the next phase
+   boundary, not one review cycle each.
+4. **Acceptance anchor** — end every review with: "Would you hand this
+   architecture to the next phase (pre-production) today — yes or no? If no,
+   name the ONE finding that stops you." The loop ends at the first "yes";
+   when findings remain, name the single worst remaining item.
+5. **Pre-committed ceiling** — at the first architecture review, declare the
+   ceiling (default: 3 revision cycles after first review, plus 1 batched pin
+   pass) and state it in the report. Re-reviews count cycles; at the ceiling
+   the verdict is ACCEPTED (deferred items carried). The ceiling cannot be
+   raised mid-loop.
+
+**Verdict rules:** zero blocking findings after routing → ACCEPTED (deferred
+items carried) or PASS, even with non-empty registers. Registers never block.
+Report the pin register, carried-findings register, and errata in the Phase 7
+output so the next phase can execute the batched pass.
+
+---
+
 ## Phase 1: Load Everything
 
 ### Phase 1a — L0: Summary Scan (fast, low tokens)
@@ -433,15 +469,29 @@ For each gap:
 
 ---
 
-### Verdict: [PASS / CONCERNS / FAIL]
+### Verdict: [PASS / ACCEPTED (deferred items carried) / CONCERNS / FAIL]
 
 PASS: All requirements covered, no conflicts, engine consistent
+ACCEPTED (deferred items carried): Terminal — handoff-ready with register items
+      carried; the acceptance question was answered "yes" or the ceiling was
+      reached. No further review cycles.
 CONCERNS: Some gaps or partial coverage, but no blocking conflicts
 FAIL: Critical gaps (Foundation/Core layer requirements uncovered),
       or blocking cross-ADR conflicts detected
 
+Cycle count: [N] of ceiling [M — declared at first review; default 3 + 1 pin pass]
+Acceptance answer: "Hand to the next phase (pre-production) today — [Yes / No]"
+[If yes with findings remaining: worst remaining item: (the ONE finding).]
+
+### Registers (carried on the report / architecture docs)
+- **Pin register**: [one-clause findings pending one batched pass — or "None"]
+- **Carried-findings register**: [findings with no observable diff — or "None"]
+- **Errata**: [meta-artifact corrections, one pass per document — or "None"]
+
 ### Blocking Issues (must resolve before PASS)
-[List items that must be resolved — FAIL verdict only]
+[List items that must be resolved — each MUST carry an Observable Diff:
+"If unfixed: a player experiences X / an implementer builds Y. If fixed: Z."
+A finding with no observable diff cannot appear here — route it to a register.]
 
 ### Required ADRs
 [Prioritised list of ADRs to create, most foundational first]
@@ -604,6 +654,11 @@ After completing the review and writing approved files, present:
    pre-production` to advance"
 3. **Rerun trigger**: "Re-run `/architecture-review` after each new ADR is written
    to verify coverage improves"
+
+   Ceiling accounting: a re-run triggered by NEW content (new ADR, new GDD
+   requirement) is a new review scope and starts a fresh ceiling. A re-run of
+   the same scope to verify fixes for a prior review's findings counts as one
+   revision cycle against the declared ceiling.
 
 Then close with `question`:
 - "Architecture review complete. What would you like to do next?"

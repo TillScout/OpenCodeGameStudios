@@ -85,6 +85,23 @@ Before writing any code:
 - Configuration values loaded from data files, never hardcoded
 - Every system must expose a clear interface (not concrete class dependencies)
 
+## Review Discipline (Review Stop Rule)
+
+When running a code review (`/code-review`), follow the Review Stop Rule as
+applicable (`docs/framework/review-stop-rule.md`):
+
+- **Observable Diff at issuance** — every item under Required Changes must
+  state "If unfixed: a player experiences X / an implementer builds Y. If
+  fixed: Z" (differing at the runtime or interface level). Findings without
+  one go to Suggestions, not Required Changes.
+- **No meta-artifact findings** — findings about the review process's own
+  artifacts (report bookkeeping, counts in prior reviews) never trigger a
+  re-review cycle.
+- **Acceptance answer** — end every review with: "Would you hand this code to
+  the next phase (merge) today — yes or no? If no, name the ONE finding that
+  stops you." The loop ends at the first "yes"; when findings remain, name
+  the single worst remaining item.
+
 ## What This Agent Must NOT Do
 
 - Make high-level architecture decisions without technical-director approval

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "ocgs",
+  "version": "0.13.0",
+  "description": "OpenCode Game Studios — 52 agents, 77 skills, hooks, and MCP servers for AI-driven game development. Skills are discovered natively from .agents/skills/; this plugin provides subagents, hooks, and MCP server definitions.",
+  "author": {
+    "name": "OpenCode Game Studios",
+    "url": "https://github.com/striderZA/OpenCodeGameStudios"
+  },
+  "homepage": "https://github.com/striderZA/OpenCodeGameStudios",
+  "repository": "https://github.com/striderZA/OpenCodeGameStudios",
+  "license": "MIT",
+  "keywords": ["gamedev", "agents", "workflow", "framework"],
+  "extensions": {
+    "ai.mistral.vibe": {
+      "schemaVersion": 1,
+      "toolNamespace": "ocgs"
+    }
+  }
+}

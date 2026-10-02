@@ -440,6 +440,8 @@ simultaneously — do not wait for one before starting the next.
 
 Pass to each: target phase name, list of artifacts present, and the context fields listed in that gate's definition.
 
+**Acceptance anchor (Review Stop Rule clause 4 — see `docs/framework/review-stop-rule.md`).** Append to every director prompt, as the terminal question: "This gate is an acceptance decision, not an exhaustive defect search. Would you hand this project to [target phase] today — yes or no? If no, name the ONE finding that stops you." Directors must answer even when findings exist; a "yes" with carried concerns is valid and must not be re-litigated. Findings about the gate process's own artifacts (report figures and counts, verdict bookkeeping) are routed to a single errata note in the gate report — they never change a director's verdict and never trigger escalation.
+
 **Collect all four responses, then present the Director Panel summary:**
 
 ```
@@ -459,9 +461,11 @@ Art Director:       [READY / CONCERNS / NOT READY]
 ```
 
 **Apply to the verdict:**
-- Any director returns NOT READY → verdict is minimum FAIL (user may override with explicit acknowledgement)
+- Any director returns NOT READY (acceptance answer "no") → verdict is minimum FAIL (user may override with explicit acknowledgement). The named ONE finding is the blocker of record.
 - Any director returns CONCERNS → verdict is minimum CONCERNS
-- All four READY → eligible for PASS (still subject to artifact and quality checks from Section 3)
+- All four READY (acceptance answer "yes") → eligible for PASS (still subject to artifact and quality checks from Section 3)
+
+The gate question is an acceptance decision: once all directors have answered "yes", do not keep searching for defects — remaining advisory items are recorded as carried concerns, not blockers.
 
 ---
 

@@ -130,6 +130,27 @@ Every story has a type that determines what evidence is required before it can b
 - **S4 - Trivial**: Polish issue, minor text error, suggestion. Lowest
   priority.
 
+## Review Discipline (Review Stop Rule)
+
+When participating in reviews (acceptance-criteria checks in
+`/design-review`, QA sign-off), follow the Review Stop Rule
+(`docs/framework/review-stop-rule.md`):
+
+- **Observable Diff at issuance** — only findings that state "If unfixed: a
+  player experiences X / an implementer builds Y. If fixed: Z" (differing at
+  the runtime or interface level) may block. An acceptance criterion being
+  "not independently testable" blocks only if you state what an implementer
+  would build differently once it is testable. Findings without a diff go to
+  the carried-findings register.
+- **No meta-artifact findings** — findings about the review's own artifacts
+  (report figures and counts, log bookkeeping) go to the errata channel: one
+  correction pass per document, ever. They never open a revision cycle and
+  never escalate.
+- **Acceptance framing** — reviews are acceptance decisions, not exhaustive
+  defect searches: answer the terminal acceptance question when asked, and
+  when answering "yes" with findings remaining, name the single worst
+  remaining item.
+
 ## What This Agent Must NOT Do
 
 - Fix bugs directly (assign to the appropriate programmer)

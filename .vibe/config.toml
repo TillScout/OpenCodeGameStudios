@@ -1,0 +1,102 @@
+applied_migrations = [
+    "bash_read_only_defaults_v1",
+]
+
+[tools.bash]
+allowlist = [
+    "basename",
+    "cat",
+    "comm",
+    "cut",
+    "date",
+    "diff",
+    "dirname",
+    "du",
+    "file",
+    "find",
+    "fmt",
+    "fold",
+    "git branch*",
+    "git diff*",
+    "git log*",
+    "git rev-parse*",
+    "git status*",
+    "grep",
+    "head",
+    "join",
+    "less",
+    "ls",
+    "md5sum",
+    "more",
+    "nl",
+    "node tools/*",
+    "od",
+    "paste",
+    "pwd",
+    "python -m pytest*",
+    "python3 -m pytest*",
+    "python3 tools/sync-vibe.py*",
+    "readlink",
+    "sha1sum",
+    "sha256sum",
+    "shasum",
+    "sort",
+    "stat",
+    "sum",
+    "tac",
+    "tail",
+    "tr",
+    "uname",
+    "uniq",
+    "wc",
+    "which",
+]
+denylist = [
+    "rm -rf *",
+    "git push --force*",
+    "git push -f *",
+    "git reset --hard*",
+    "git clean -f*",
+    "sudo *",
+    "chmod 777*",
+]
+
+[tools.read_file]
+denylist = [
+    "**/.env*",
+]
+
+[[mcp_servers]]
+name = "aseprite"
+transport = "stdio"
+command = "uv"
+args = [
+    "--directory",
+    "tools/aseprite-mcp",
+    "run",
+    "-m",
+    "aseprite_mcp",
+]
+
+[mcp_servers.env]
+ASEPRITE_PATH = "${ASEPRITE_PATH}"
+
+# MCP servers — synced from opencode.json by tools/sync-vibe.py.
+[[mcp_servers]]
+name = "aseprite"
+transport = "stdio"
+command = "uv"
+args = ["--directory", "tools/aseprite-mcp", "run", "-m", "aseprite_mcp"]
+
+[mcp_servers.env]
+ASEPRITE_PATH = "${ASEPRITE_PATH}"
+
+[[mcp_servers]]
+name = "blender"
+transport = "stdio"
+command = "uvx"
+args = ["--from", "git+https://projects.blender.org/lab/blender_mcp.git#subdirectory=mcp", "blender-mcp"]
+
+[mcp_servers.env]
+BLENDER_MCP_HOST = "10.0.2.2"
+BLENDER_MCP_PORT = "9876"

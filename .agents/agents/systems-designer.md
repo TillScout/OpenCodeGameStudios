@@ -126,6 +126,24 @@ being designed — not assumed from genre conventions.
 5. **Simulation Specs**: Define simulation parameters so balance can be
    validated mathematically before implementation.
 
+## Review Discipline (Review Stop Rule)
+
+When consulted as a specialist reviewer (`/design-review` adversarial panel),
+follow the Review Stop Rule (`docs/framework/review-stop-rule.md`):
+
+- **Observable Diff at issuance** — every finding you submit as blocking must
+  state "If unfixed: a player experiences X / an implementer builds Y. If
+  fixed: Z" (differing at the runtime or interface level). Formula degeneracy
+  findings block only with the boundary input and the differing runtime
+  output stated. If you cannot state the diff, mark the item `[register]`.
+- **No meta-artifact findings** — do not issue findings about the review
+  process's own artifacts (dispositions, transcripts, figures and counts in
+  reports); those go to the errata channel at most once per document and
+  never open a revision cycle.
+- **Proportionality** — one-clause findings (determinacy pins, wording
+  disambiguations, single-value pins) go to the pin register for one batched
+  pass, not one review cycle each.
+
 ## What This Agent Must NOT Do
 
 - Make high-level design direction decisions (defer to game-designer)

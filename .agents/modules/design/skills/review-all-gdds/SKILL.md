@@ -38,6 +38,40 @@ completeness. This skill reviews the *relationships* between all GDDs.
 
 ---
 
+## Review Stop Rule
+
+This review is an acceptance decision, not an exhaustive defect search. Full
+text: `docs/framework/review-stop-rule.md`. Binding clauses:
+
+1. **Consumer test** — a finding may only be flagged Blocking if it carries an
+   Observable Diff, stated at issuance: "If unfixed: a player experiences X /
+   an implementer builds Y. If fixed: Z" — differing at the runtime or
+   interface level. No observable diff → carried-findings register on the
+   report, not a blocking flag.
+2. **Regeneration guard** — findings about this review's own artifacts
+   (figures and counts in prior cross-review reports, disposition bookkeeping)
+   go to a single consolidated errata channel: at most one correction pass per
+   report, ever. They never flag a GDD for revision and never escalate.
+3. **Proportionality** — one-clause findings that pass the consumer test
+   (determinacy pins, wording disambiguations, single-value pins) go to the
+   pin register and are executed in ONE batched pass at the next phase
+   boundary, not one review cycle each.
+4. **Acceptance anchor** — end every review with: "Would you hand this GDD set
+   to the next phase (architecture) today — yes or no? If no, name the ONE
+   finding that stops you." The loop ends at the first "yes"; when findings
+   remain, name the single worst remaining item.
+5. **Pre-committed ceiling** — at the first cross-GDD review, declare the
+   ceiling (default: 3 revision cycles after first review, plus 1 batched pin
+   pass) and state it in the report. Re-reviews of the same GDD set count
+   cycles; at the ceiling the verdict is ACCEPTED (deferred items carried).
+   The ceiling cannot be raised mid-loop. A review triggered by NEW GDDs or
+   significantly revised content is a new scope and starts a fresh ceiling.
+
+**Verdict rules:** zero blocking findings after routing → ACCEPTED (deferred
+items carried) or PASS, even with non-empty registers. Registers never block.
+
+---
+
 ## Phase 1: Load Everything
 
 ### Phase 1a — L0: Summary Scan (fast, low tokens)
@@ -522,19 +556,34 @@ Scenarios walked: [N]
 
 ### GDDs Flagged for Revision
 
-| GDD | Reason | Type | Priority |
-|-----|--------|------|----------|
-| [system-a].md | Rule contradiction with [system-b].md | Consistency | Blocking |
-| [system-c].md | Stale reference to nonexistent mechanic | Consistency | Blocking |
-| [system-d].md | No pillar alignment | Design Theory | Warning |
+| GDD | Reason | Type | Priority | Observable Diff |
+|-----|--------|------|----------|-----------------|
+| [system-a].md | Rule contradiction with [system-b].md | Consistency | Blocking | If unfixed: a player experiences [X] / an implementer builds [Y]. If fixed: [Z] |
+| [system-c].md | Stale reference to nonexistent mechanic | Consistency | Blocking | [Observable Diff] |
+| [system-d].md | No pillar alignment | Design Theory | Warning | [Observable Diff, or route to a register] |
 
----
+Only findings with a stated Observable Diff may be marked Blocking. One-clause
+findings go to the pin register (one batched pass); no-diff findings go to the
+carried-findings register; meta-artifact corrections go to the errata channel.
 
-### Verdict: [PASS / CONCERNS / FAIL]
+### Registers (carried on the report)
+- **Pin register**: [one-clause findings pending one batched pass — or "None"]
+- **Carried-findings register**: [findings with no observable diff — or "None"]
+- **Errata**: [meta-artifact corrections, one pass per report — or "None"]
+
+### Acceptance Answer
+"Hand this GDD set to the next phase (architecture) today — [Yes / No]"
+[If yes with findings remaining: worst remaining item: (the ONE finding).]
+
+### Verdict: [PASS / ACCEPTED (deferred items carried) / CONCERNS / FAIL]
 
 PASS: No blocking issues. Warnings present but don't prevent architecture.
+ACCEPTED (deferred items carried): Terminal — handoff-ready with register
+      items carried; acceptance question answered "yes" or the ceiling reached.
 CONCERNS: Warnings present that should be resolved but are not blocking.
 FAIL: One or more blocking issues must be resolved before architecture begins.
+
+Cycle count: [N] of ceiling [M — declared at first review; default 3 + 1 pin pass]
 
 ### If FAIL — required actions before re-running:
 [Specific list of what must change in which GDD]
@@ -561,10 +610,11 @@ After writing the report (and updating systems index if approved), silently
 append to `production/session-state/active.md`:
 
     ## Session Extract — /review-all-gdds [date]
-    - Verdict: [PASS / CONCERNS / FAIL]
+    - Verdict: [PASS / ACCEPTED (deferred items carried) / CONCERNS / FAIL]
     - GDDs reviewed: [N]
     - Flagged for revision: [comma-separated list, or "None"]
-    - Blocking issues: [N — brief one-line descriptions, or "None"]
+    - Blocking issues: [N — each with an Observable Diff, or "None"]
+    - Register items: [pin: N / carried: N / errata: N]
     - Recommended next: [the Phase 7 handoff action, condensed to one line]
     - Report: design/gdd/gdd-cross-review-[date].md
 
